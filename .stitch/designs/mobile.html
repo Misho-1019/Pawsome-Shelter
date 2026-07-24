@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pawsome Shelter | Find Your New Best Friend</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-primary": "#ffb692",
+                    "tertiary-fixed-dim": "#59d6f6",
+                    "tertiary-container": "#00a7c6",
+                    "surface-container-high": "#f8e4dc",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#392e29",
+                    "on-primary-container": "#562000",
+                    "surface-dim": "#ead6ce",
+                    "on-secondary-fixed-variant": "#005048",
+                    "on-secondary-fixed": "#00201c",
+                    "on-error-container": "#93000a",
+                    "secondary": "#006a60",
+                    "on-primary-fixed-variant": "#793000",
+                    "secondary-container": "#8cf5e4",
+                    "inverse-on-surface": "#ffede6",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#ffb692",
+                    "tertiary-fixed": "#b0ecff",
+                    "tertiary": "#00687c",
+                    "on-tertiary-container": "#003642",
+                    "primary-container": "#e97a3d",
+                    "primary-fixed": "#ffdbcb",
+                    "on-secondary-container": "#007166",
+                    "on-primary-fixed": "#341100",
+                    "surface": "#fff8f6",
+                    "surface-bright": "#fff8f6",
+                    "outline": "#8a7268",
+                    "on-tertiary-fixed-variant": "#004e5e",
+                    "surface-container-highest": "#f2ded6",
+                    "surface-container": "#feeae2",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#f2ded6",
+                    "on-surface": "#231915",
+                    "outline-variant": "#ddc1b4",
+                    "background": "#fff8f6",
+                    "on-tertiary-fixed": "#001f27",
+                    "on-tertiary": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "surface-container-low": "#fff1eb",
+                    "primary": "#9e4203",
+                    "surface-tint": "#9e4203",
+                    "secondary-fixed": "#8cf5e4",
+                    "on-background": "#231915",
+                    "secondary-fixed-dim": "#6fd8c8",
+                    "on-surface-variant": "#564239"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "48px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 20px rgba(26, 26, 46, 0.05);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0px 12px 32px rgba(26, 26, 46, 0.12);
+        }
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary">Pawsome Shelter</div>
+<!-- Desktop Nav -->
+<div class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#dogs">Adopt</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#how-to">Process</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#stories">Stories</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#about">About</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200" href="#contact">Contact</a>
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-lg font-label-md transition-transform active:scale-95">Donate Now</button>
+</div>
+<!-- Mobile Menu Toggle -->
+<button class="md:hidden text-primary p-2" onclick="toggleMobileMenu()">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+<!-- Mobile Menu Overlay -->
+<div class="hidden md:hidden bg-surface border-t border-outline-variant px-margin-mobile py-6 flex flex-col gap-4" id="mobile-menu">
+<a class="font-headline-md text-on-surface-variant py-2" href="#dogs" onclick="toggleMobileMenu()">Adopt</a>
+<a class="font-headline-md text-on-surface-variant py-2" href="#how-to" onclick="toggleMobileMenu()">Process</a>
+<a class="font-headline-md text-on-surface-variant py-2" href="#stories" onclick="toggleMobileMenu()">Stories</a>
+<a class="font-headline-md text-on-surface-variant py-2" href="#about" onclick="toggleMobileMenu()">About</a>
+<a class="font-headline-md text-on-surface-variant py-2" href="#contact" onclick="toggleMobileMenu()">Contact</a>
+<button class="bg-primary-container text-on-primary-container w-full py-4 rounded-xl font-bold mt-4">Donate Now</button>
+</div>
+</nav>
+<main class="pt-0">
+<!-- 1. HERO SECTION -->
+<section class="relative h-[795px] min-h-[600px] flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="A beautiful, high-resolution golden retriever sitting happily in a sun-drenched green meadow during golden hour. The lighting is warm and cinematic, highlighting the dog's soft fur and joyous expression. The overall aesthetic is editorial and premium, with a shallow depth of field that keeps the focus on the loyal companion. Soft rays of sunlight filter through distant trees in a dreamlike, high-end commercial style." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuChDNyRrbMIitJKmHxzczewlPP9pyy99aq4tunXWlsZHAwGvwuDp3H2ZR1V7L894zCMUM5vlDE3a867ZM6VXVObfBNE6H4HIZ5W7F04svBd0bIyLb-Y3UhgForeEtfuGwSQihglIZ0DH9lhBEq0ZMXbeXRI2wMR0PySm01NU8rn5WwAzRCFVvPS67U8rKp_qJslgdQH8GjKMAjeZSWRCC2MygnyW3oIkPUuwQ4Vl0LcLXZrk5mpQh_bT9QXce8wPcT3nv12ungfCxBM')"></div>
+<div class="absolute inset-0 hero-gradient"></div>
+<div class="relative z-10 text-center px-margin-mobile max-w-3xl">
+<h1 class="font-headline-xl text-headline-lg-mobile md:text-headline-xl text-white mb-6">Find Your New Best Friend</h1>
+<p class="font-body-lg text-white/90 mb-10 max-w-xl mx-auto">Every dog deserves a loving home. Browse our available dogs and change a life today through a premium adoption experience.</p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<a class="bg-primary-container hover:bg-primary text-on-primary-container px-10 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-95 text-center" href="#dogs">Adopt Now</a>
+<a class="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border border-white/40 px-10 py-4 rounded-xl font-bold transition-all text-center" href="#how-to">Learn How It Works</a>
+</div>
+</div>
+<!-- Scroll Indicator -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+<span class="material-symbols-outlined text-white text-4xl">keyboard_double_arrow_down</span>
+</div>
+</section>
+<!-- 2. MEET OUR DOGS (#dogs) -->
+<section class="py-20 md:py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="dogs">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">Meet Our Dogs</h2>
+<div class="flex flex-wrap justify-center gap-3 mt-8">
+<button class="px-6 py-2 rounded-full bg-primary text-white font-label-md">All</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md hover:bg-primary-fixed transition-colors">Small</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md hover:bg-primary-fixed transition-colors">Medium</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md hover:bg-primary-fixed transition-colors">Large</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md hover:bg-primary-fixed transition-colors">Puppies</button>
+<button class="px-6 py-2 rounded-full bg-surface-container-high text-on-surface-variant font-label-md hover:bg-primary-fixed transition-colors">Seniors</button>
+</div>
+</div>
+<!-- Dog Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Buddy -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A professional portrait of a medium-sized, friendly Labrador Retriever named Buddy. The background is a soft-focus garden setting with vibrant greenery. Buddy has an alert and curious expression, his eyes shining with intelligence. The lighting is soft and natural, emphasizing the rich texture of his chocolate coat. The overall image style is clean, editorial, and warm." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWdHFdxV9yQnFkZaAwdk8e8rD1ZsuxAB6hZa9xpHiEnHFUpZBO_zW2c7OS1Y2dFQ7uEIgMCw3Wd_N8OMm8crYWXrPMeeMoXuaZsnMXobfmBCfGqbOhVoLZhnbebiUYwnr_OwqfXLb3GCZCwJDszwgGuFAdneX-gqAcdaRz0QTsK2uubGi06L8iftimbO49kJAPYtK-yPG0iCIeps3D5BMQa1193CPGafH8GDXU85UYcG-a9EYSzKklY4CpDi44EYYeE4EL9wZq5Kn"/>
+<div class="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Available</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Buddy</h3>
+<p class="text-on-surface-variant text-sm">Labrador • 2 Years • Male</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Good with kids</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">High energy</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+<!-- Luna -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-end editorial shot of a sleek, white Samoyed named Luna. She is sitting elegantly on a soft cream-colored rug in a bright, modern interior space. The lighting is soft-key and airy, highlighting her fluffy white fur and dark, expressive eyes. The aesthetic is luxurious and heartwarming, capturing a serene moment of domestic bliss." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXEd3hVDwgEpX2j3g6inX4VDTGbP_34vnfcEQZdlOQu4NYDaGVzGL-ntBJcoxAaRFqRJ6rjb1sHAaiRMHD4OUJuv5jlByZa75N1SGZUw0wN7ODopPrO87x_PHpghmsrLQzTeK5OBqcntb6m3mEnvvq1Xsdvd-FmMiTzaW2VzF8p1yVbC99o11sP1TjFYdO_JOwdhdFjQZDAQjUzWkGvWu_keryiiQ1JH0U2uKiT3nBCTCGy2yZynbv7boB8sSI2UAqDxlccgF86-tu"/>
+<div class="absolute top-4 right-4 bg-primary-container text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Pending Adoption</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Luna</h3>
+<p class="text-on-surface-variant text-sm">Samoyed • 1 Year • Female</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Very Social</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Quiet</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+<!-- Max -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A portrait of a senior German Shepherd named Max, looking dignified and calm. He is set against a warm, sunlit autumn forest background with orange and yellow leaves. The photograph uses a professional macro lens to capture the details of his aging yet wise face. The lighting is golden and inviting, evoking a sense of companionship and loyalty." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyDnZKKPfECWDR3BATKuDdQrmVfV-OL0xM-R6-GpypeFXAM3a9GGf8O40kxwlXF3PrtghQ0AbgXO9tGIYwnECAKbxM2gwb2krTUhLMAXZGqEQ4lKv9ethHEhWUmlR3745RZ1SAhJgfxaASCWAfpxBbOxukQthjBJPL8qtAhPQEQpUTwmLI5Mem3tB-yrfY5wr-MmeBp-922OVF7RNnIybrb-oQ_7BIfFsAGGihpbvlcFbVD08iK8CFaCb3DU_lRdHF8rLU5QnEGxsv"/>
+<div class="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Available</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Max</h3>
+<p class="text-on-surface-variant text-sm">German Shepherd • 8 Years • Male</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Trained</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Gentle</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+<!-- Daisy -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A charming close-up of a small Beagle puppy named Daisy with her tongue out. She is playing on a clean wooden porch. The lighting is bright and cheerful midday sun. The image is crisp and lively, showcasing the puppy's energetic spirit and colorful markings. This high-quality pet photography captures the adorable nature of a young dog." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsoj0CH06bXH_5oAXc1DTsXu3P9RH18b9dYbt0mDBXtZQrmNilctK1To3bHO6G44YK60kIIzsxHGP1GUKXwD3mWkhiQxFuuEkwo8j0g4fTtSYhCdUNXHAKLjLv_2QMtNo8aTw2FcBH28S5euv87bDbU4r3hfFbCtPcEGcww7CMvd3W5JTPI3OIeCJaH8Gu7tfAxaPUCK1A4d13TTxlcRpsFS5_J2Dm6KEDQIJ5ow6GaDjsKDhQy29s27MQTsRqf9A-BoJUEA3O8yfO"/>
+<div class="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Available</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Daisy</h3>
+<p class="text-on-surface-variant text-sm">Beagle • 4 Months • Female</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Active</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Curious</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+<!-- Charlie -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A majestic Border Collie named Charlie mid-run in a vibrant, grassy field. The background shows a soft, cinematic mountain range. The action shot is perfectly frozen, showing Charlie's focus and athletic grace. The overall aesthetic is adventurous and energetic, with cool tones and high contrast to emphasize his black and white coat." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsJQgPIy6AppS9L-TeFDxh23le-KPgGUAB5FRB-RUaiYiuhLvuheUjGVbnBvPRb6b10D9N4QT08SkNy8xDuQQhWtKCXnRMKAofAX2rVimRIhl0hw2b_WMUAryIAbBgVHCz8aYG_PzKpBkM3DhLgac_DVItxKt9IA9XJdQ7T5a2eSor6qtWQkHa_dSgERKutAV1569xI0pyZ1klvDIX1FlpX5WTD-QHGwIk2lRAf-ga98MspXtHaNWlXYPr56eGVbWHmSTkYhzrE82_"/>
+<div class="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Available</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Charlie</h3>
+<p class="text-on-surface-variant text-sm">Border Collie • 3 Years • Male</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Smart</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Athletic</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+<!-- Bella -->
+<div class="group bg-white rounded-2xl overflow-hidden soft-shadow soft-shadow-hover transition-all duration-300">
+<div class="h-80 overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A soulful portrait of a French Bulldog named Bella, wearing a small designer bandana. She is perched on a mid-century modern velvet chair. The room lighting is soft and artistic, creating deep shadows and highlights that bring out her unique features. The style is highly editorial and fashion-forward, blending pet photography with premium interior design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARWNX0x_UZGj51wPFLoDC5N3_IwaWK5GbbpZelPppXBl93llQXQb9hKk5W_ngeDWV2jMrRpwbw2U0-mWC7DiP-nvJEsZlxrFGOUfEwaz4E9L4CdAIIGwUwwKbxKa_p6Z36iKlbq70p-BT6zCjTS4KeMstm92Di-CyUtAsvKbe7RQS5P8kWH29AWKwN45UIGkNPoRJN3225BlpCyw_dseBMmD8WwkBRfUr_onzsx_IyKKJWYvemGSOZ3v3YuEWVcpXZJoEZ69XIROuH"/>
+<div class="absolute top-4 right-4 bg-secondary text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Available</div>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-end mb-4">
+<div>
+<h3 class="font-headline-md text-on-surface">Bella</h3>
+<p class="text-on-surface-variant text-sm">Frenchie • 4 Years • Female</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Calm</span>
+<span class="px-3 py-1 bg-surface-container-low text-secondary text-xs rounded-full font-semibold">Companion</span>
+</div>
+<button class="w-full py-3 rounded-xl border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors duration-200">Meet Me</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. HOW TO ADOPT (#how-to) -->
+<section class="py-20 bg-surface-container-low" id="how-to">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">How To Adopt</h2>
+<p class="text-on-surface-variant max-w-xl mx-auto">Our streamlined process ensures every dog goes to the perfect forever home.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<!-- Step 1 -->
+<div class="text-center relative z-10">
+<div class="w-20 h-20 bg-primary-container text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+<span class="material-symbols-outlined text-4xl">search</span>
+</div>
+<h3 class="font-headline-md mb-4">1. Browse</h3>
+<p class="text-on-surface-variant">Look through our available residents and find the one that speaks to your heart.</p>
+</div>
+<!-- Step 2 -->
+<div class="text-center relative z-10">
+<div class="w-20 h-20 bg-primary-container text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+<span class="material-symbols-outlined text-4xl">edit_note</span>
+</div>
+<h3 class="font-headline-md mb-4">2. Apply</h3>
+<p class="text-on-surface-variant">Fill out our adoption questionnaire and meet with one of our coordinators for a chat.</p>
+</div>
+<!-- Step 3 -->
+<div class="text-center relative z-10">
+<div class="w-20 h-20 bg-primary-container text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+<span class="material-symbols-outlined text-4xl">home</span>
+</div>
+<h3 class="font-headline-md mb-4">3. Welcome Home</h3>
+<p class="text-on-surface-variant">After approval and a successful meet-and-greet, finalize the paperwork and bring them home!</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. HAPPY TAILS (#stories) -->
+<section class="py-20 md:py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="stories">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-4">Happy Tails</h2>
+<p class="text-on-surface-variant">Read stories from families whose lives were changed by our dogs.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-surface border border-outline-variant p-8 rounded-2xl soft-shadow">
+<div class="flex items-center gap-1 text-primary mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-on-surface mb-8">"Adopting Oliver was the best decision we ever made. Pawsome Shelter supported us every step of the way!"</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A candid, warm photo of a young couple smiling and hugging their adopted golden retriever on a sunny park bench. The lighting is dappled and romantic. High-end lifestyle photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTgUBVRujAvR2yAA6-gzDcjoIoQ4n48zDnAnwrfHQxWzJwt3z_sEBe1DNLarH9BZ3BvNR6sVNyI1F6mit4fdhNSbeQuIxNekxwIjOofSFxBTEr74A9jhur4a9wjpidjq-vBpGVko6EFs23mK5Ha8rXdEs0vbhFIDHGZH7f5Lg24QsQMH-pWX3UQ4bmDnbuagP5dZD75TKxHA8CJBpFLbI-9BOTvC5BemY1idZDUN-0p_y9UL2TZ2_HA25yiircFPNeuEO1rIYh6Zmg"/>
+</div>
+<div>
+<p class="font-bold">The Millers</p>
+<p class="text-xs text-on-surface-variant">Adopted 'Oliver'</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-surface border border-outline-variant p-8 rounded-2xl soft-shadow">
+<div class="flex items-center gap-1 text-primary mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-on-surface mb-8">"The staff really cared about finding the right fit for our family. Rocky is a perfect addition to our home."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="An older man sitting in a cozy living room, stroking his adopted black labrador. The lighting is soft and indoor-focused, creating a peaceful and contented mood. Professional interior lifestyle photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzE6JTeG7GYRmoOiu5uCs9pJTmTUnOGn0MAa9RYzjN2DVFNr_DRl-O9jCCbRy9QwDUTZX2Up6W7-FRoGr49NbPxIpSOeE0asfvbpWhnn6JIPiM94QGQ2YQz7hs5FBmLhr6qxGNsGvqQDJJXEA36P_YMogxe-LQUz2LkjY3IHNTEAB8CysrBdRSzddIBnDGqB14SBmpos5NGI9CxcG5NCFFhd7WZXwrbHgF0rCJdMg6NtL-omOYd6gMVI76WC49rSr2SRT_Vw3osTtD"/>
+</div>
+<div>
+<p class="font-bold">Sarah & Tom</p>
+<p class="text-xs text-on-surface-variant">Adopted 'Rocky'</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-surface border border-outline-variant p-8 rounded-2xl soft-shadow">
+<div class="flex items-center gap-1 text-primary mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="italic text-on-surface mb-8">"Expert process and wonderful dogs. Our little Rosie has brought so much joy into our apartment life."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A woman in a stylish city apartment smiling at her small terrier dog sitting on the windowsill. Bright morning light floods the room. High-key, modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZRUrWEvpbpWGT0OJ6K5csSPfao0x8lsKsAOMkUNB1agWkMYaJ44WzcCJ2iKlVvSP3zNcVu6xmk6INcrzWjx0HDWlc6jr8jhLTxDzXcXAcSgJvi-0-I206rSeSnSvoAMeOy07jTLxdnI-OlJvXR3NlIi_Sh_JiPjWkDKswoBHKRo0ic0RmZ92FBzSBHuF_tiERTa394Ox9zZ3aDmExmjCsHwjb3NQFyIWjWIifkgVUDE6BNrVzEhSeA7SXBgAn-NVnX3e0j-G4aAdc"/>
+</div>
+<div>
+<p class="font-bold">Elena R.</p>
+<p class="text-xs text-on-surface-variant">Adopted 'Rosie'</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. GET INVOLVED -->
+<section class="py-20 bg-primary-container text-white overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-12">
+<!-- Volunteer Card -->
+<div class="bg-white/10 backdrop-blur-lg border border-white/20 p-10 rounded-2xl">
+<h2 class="font-headline-lg mb-6">Become a Volunteer</h2>
+<p class="font-body-lg mb-8 text-white/90">Join our team of dedicated dog lovers. Whether it's walking dogs, helping with events, or cleaning kennels, we need you!</p>
+<button class="bg-white text-primary font-bold px-8 py-4 rounded-xl hover:bg-surface-container-low transition-colors w-full sm:w-auto">Apply to Volunteer</button>
+</div>
+<!-- Donate Card -->
+<div class="bg-white text-on-surface p-10 rounded-2xl shadow-xl">
+<h2 class="font-headline-lg text-primary mb-6">Donate Today</h2>
+<p class="text-on-surface-variant mb-8">Your contributions provide medical care, premium food, and comfortable shelter for dogs in transition.</p>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+<button class="py-3 rounded-lg border-2 border-outline-variant font-bold hover:border-primary hover:text-primary transition-all">$25</button>
+<button class="py-3 rounded-lg border-2 border-primary bg-primary text-white font-bold transition-all">$50</button>
+<button class="py-3 rounded-lg border-2 border-outline-variant font-bold hover:border-primary hover:text-primary transition-all">$100</button>
+<button class="py-3 rounded-lg border-2 border-outline-variant font-bold hover:border-primary hover:text-primary transition-all text-xs">Custom</button>
+</div>
+<button class="w-full bg-secondary text-white py-4 rounded-xl font-bold hover:bg-on-secondary-container transition-colors">Complete Donation</button>
+</div>
+</div>
+</section>
+<!-- 6. ABOUT (#about) -->
+<section class="py-20 md:py-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center" id="about">
+<div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-6">About Pawsome Shelter</h2>
+<p class="text-on-surface-variant font-body-lg mb-6">For over a decade, we have been the sanctuary of choice for abandoned and rescued hounds. Our mission is to bridge the gap between shelter life and forever families through empathy, training, and education.</p>
+<p class="text-on-surface-variant font-body-lg mb-10">We believe every dog has a unique personality and deserves a bespoke adoption match. Our facility is designed to reduce stress and maximize socialization, ensuring our dogs are ready for their new homes.</p>
+<div class="grid grid-cols-2 gap-8">
+<div>
+<p class="text-4xl font-bold text-primary mb-1">500+</p>
+<p class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Rescued</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-primary mb-1">350+</p>
+<p class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Happy Families</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-primary mb-1">10</p>
+<p class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Years Active</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-primary mb-1">50+</p>
+<p class="text-sm font-semibold text-on-surface-variant uppercase tracking-widest">Volunteers</p>
+</div>
+</div>
+</div>
+<div class="relative">
+<div class="aspect-square rounded-2xl overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="A wide-angle, premium shot of a beautiful, clean modern dog shelter facility. The building features large glass windows, warm wooden accents, and a lush outdoor play area where several happy dogs are interacting with volunteers. The mood is professional, upscale, and incredibly welcoming. Sunlight brightens the entire scene, showing a place of hope and care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQndJURYwzWRgJdHL9wIo0AW4aGgql7DHk7ssKesqQpZjVLT4T-QFLwFmWDmhtaTK0ZSkiEW2dkApkxnimr2onXU8x1SlqVFoz4JbkWYwlutKdrjhyDmfxTEwGmA4uZ-g4uiAy9CqPLRMJaXmgPQu9i3jRFGroOLXDYhI-UpEU-vQfQ2SR6pah4JUcKRbRpU3MuHlhgQ8JWqOjgQH8oJlKAOy98sNDj-z_n5M0hrI_J3_jVU_O2ibOXR-ftysHYiOl26_ZI9yj32PQ"/>
+</div>
+<div class="absolute -bottom-10 -right-10 hidden md:block w-48 h-48 bg-primary-fixed rounded-2xl -z-10 animate-pulse"></div>
+</div>
+</section>
+<!-- 7. CONTACT (#contact) -->
+<section class="py-20 bg-surface-container" id="contact">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="bg-white rounded-3xl overflow-hidden soft-shadow grid grid-cols-1 md:grid-cols-2">
+<div class="p-10 lg:p-16">
+<h2 class="font-headline-lg text-primary mb-8">Visit Us</h2>
+<div class="space-y-8">
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-primary text-3xl">location_on</span>
+<div>
+<h4 class="font-bold mb-1">Address</h4>
+<p class="text-on-surface-variant">123 Canine Lane, Petville, CA 90210</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-primary text-3xl">call</span>
+<div>
+<h4 class="font-bold mb-1">Phone</h4>
+<p class="text-on-surface-variant">(555) 123-4567</p>
+</div>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-primary text-3xl">schedule</span>
+<div>
+<h4 class="font-bold mb-1">Hours</h4>
+<p class="text-on-surface-variant">Mon-Fri: 10am - 6pm<br/>Sat-Sun: 11am - 4pm</p>
+</div>
+</div>
+</div>
+<div class="flex gap-4 mt-12">
+<a class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined">qr_code_2</span></a>
+<a class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined">share_reviews</span></a>
+<a class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined">photo_camera</span></a>
+</div>
+</div>
+<div class="h-[400px] md:h-auto relative bg-surface-dim overflow-hidden">
+<!-- Map Placeholder -->
+<div class="w-full h-full bg-cover bg-center opacity-70" data-location="Petville, CA" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDn5jxE87Fqp5wnbnkjA53szAQAx1GlKuAgaXPbmj2s_IhlREyaQ0QkwRW0UNouyjoN30HXOXiIVNaXasjrGR3S52kXDn7iniiJ6l5y8E3ElC2xUEbzLRd6nPqps9GWkLYT6hDtalK7aF2AuhydV_tcfiajz94vybyRnkfBmtJwD9HP7fQjJJQtX9jqRe9tTqeFNikmaiEAN4zmUPrjR5n6-qZ9OvLkAI28qGUz0KpneptBqZSmXBS_OSkpKamA2dNLhx_tSFyU0c6G')"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative">
+<span class="material-symbols-outlined text-primary text-6xl absolute -top-12 -left-8 animate-bounce" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<div class="bg-white p-4 rounded-xl shadow-xl whitespace-nowrap font-bold">Pawsome Shelter</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- 8. FOOTER -->
+<footer class="bg-surface-container-highest">
+<!-- Newsletter Section -->
+<div class="border-b border-outline-variant py-16">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+<h3 class="font-headline-md text-primary mb-4">Stay Pawsome</h3>
+<p class="text-on-surface-variant mb-8 max-w-lg mx-auto">Get monthly updates on new residents, success stories, and shelter events directly to your inbox.</p>
+<form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+<input class="flex-1 px-6 py-4 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-all" placeholder="Your email address" type="email"/>
+<button class="bg-primary text-white font-bold px-10 py-4 rounded-xl hover:bg-on-primary-fixed-variant transition-colors" type="submit">Subscribe</button>
+</form>
+</div>
+</div>
+<!-- Main Footer Links -->
+<div class="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop py-12 max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-8 md:mb-0">Pawsome Shelter</div>
+<div class="flex flex-wrap justify-center gap-8 mb-8 md:mb-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-colors" href="#about">About</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-colors" href="#dogs">Dogs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-colors" href="#how-to">How to Adopt</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline transition-colors" href="#contact">Contact</a>
+</div>
+<div class="text-center md:text-right">
+<p class="font-body-md text-body-md text-on-surface-variant">© 2026 Pawsome Shelter. All rights reserved.</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Made with ❤️ for dogs everywhere</p>
+</div>
+</div>
+</footer>
+<script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Smooth Scroll Enhancement
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Simple Active Link Highlighting on Scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            let current = "";
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('nav div.hidden a').forEach(a => {
+                a.classList.remove('text-primary', 'font-bold', 'border-b-2', 'border-primary', 'pb-1');
+                if (a.getAttribute('href') === `#${current}`) {
+                    a.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary', 'pb-1');
+                }
+            });
+        });
+    </script>
+</body></html>

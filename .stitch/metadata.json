@@ -1,10 +1,10 @@
 {
-  "name": null,
-  "projectId": null,
+  "name": "projects/16974000666086678920",
+  "projectId": "16974000666086678920",
   "title": "Pawsome Shelter",
   "visibility": "PRIVATE",
-  "createTime": null,
-  "updateTime": null,
+  "createTime": "2026-07-24T22:21:34.632644Z",
+  "updateTime": "2026-07-24T22:21:34.632644Z",
   "projectType": "PROJECT_DESIGN",
   "origin": "STITCH",
   "deviceType": "DESKTOP",
@@ -15,7 +15,22 @@
     "customColor": "#E97A3D",
     "saturation": 3
   },
-  "screens": {},
+  "screens": {
+    "desktop": {
+      "id": "cde332f298894782a4561efe5fe76125",
+      "sourceScreen": "projects/16974000666086678920/screens/cde332f298894782a4561efe5fe76125",
+      "title": "Pawsome Shelter - Premium Landing Page",
+      "width": 2560,
+      "height": 13232
+    },
+    "mobile": {
+      "id": "b74051189ce04dabae10b05dc9ba736e",
+      "sourceScreen": "projects/16974000666086678920/screens/b74051189ce04dabae10b05dc9ba736e",
+      "title": "Pawsome Shelter - Premium Mobile Landing Page",
+      "width": 780,
+      "height": 20972
+    }
+  },
   "metadata": {
     "userRole": "OWNER"
   }
