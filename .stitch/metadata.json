@@ -1,0 +1,22 @@
+{
+  "name": null,
+  "projectId": null,
+  "title": "Pawsome Shelter",
+  "visibility": "PRIVATE",
+  "createTime": null,
+  "updateTime": null,
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designTheme": {
+    "colorMode": "LIGHT",
+    "font": "INTER",
+    "roundness": "ROUND_EIGHT",
+    "customColor": "#E97A3D",
+    "saturation": 3
+  },
+  "screens": {},
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}
