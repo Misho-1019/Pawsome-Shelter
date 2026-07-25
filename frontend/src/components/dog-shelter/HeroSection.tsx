@@ -1,0 +1,55 @@
+import { Button } from '../ui'
+
+export function HeroSection() {
+  const scrollToSection = (href: string) => {
+    const element = document.querySelector(href)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  return (
+    <section className="relative h-[600px] md:h-[921px] min-h-[600px] flex items-center overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <div
+          className="w-full h-full bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-on-background/40 to-transparent" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-container mx-auto px-4 md:px-12 w-full text-white">
+        <div className="max-w-2xl animate-fade-in-up">
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight drop-shadow-md">
+            Find Your New<br />Best Friend
+          </h1>
+          <p className="font-body text-lg md:text-xl mb-10 opacity-95 max-w-lg drop-shadow-sm">
+            Every dog deserves a loving home. Browse our available dogs and
+            change a life today through our empathetic and professional adoption
+            journey.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => scrollToSection('#dogs')}
+              className="inline-flex items-center gap-2"
+            >
+              Adopt Now
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => scrollToSection('#process')}
+            >
+              Learn How It Works
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

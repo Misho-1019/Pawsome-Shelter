@@ -1,0 +1,73 @@
+export function ContactSection() {
+  return (
+    <section className="py-32 bg-surface-container-low" id="contact">
+      <div className="max-w-container mx-auto px-4 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div>
+            <h2 className="font-heading text-3xl md:text-4xl mb-10">
+              Visit Our Shelter
+            </h2>
+            <div className="space-y-8">
+              <div className="flex gap-6 items-start">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined">location_on</span>
+                </div>
+                <div>
+                  <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Address</h4>
+                  <p className="font-body text-lg">
+                    123 Rescue Lane, Houndview Heights<br />Paw City, PC 56789
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-6 items-start">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined">call</span>
+                </div>
+                <div>
+                  <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Call Us</h4>
+                  <p className="font-body text-lg">(555) PAW-SOME • (555) 729-7663</p>
+                </div>
+              </div>
+              <div className="flex gap-6 items-start">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined">schedule</span>
+                </div>
+                <div>
+                  <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Visiting Hours</h4>
+                  <p className="font-body text-lg">
+                    Mon - Fri: 10 AM - 6 PM<br />Sat - Sun: 11 AM - 4 PM
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-16 flex gap-6">
+              <a className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+                <img alt="Facebook" className="w-6 h-6" src="/images/icon-facebook.png" />
+              </a>
+              <a className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+                <img alt="Instagram" className="w-6 h-6" src="/images/icon-instagram.png" />
+              </a>
+              <a className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+                <img alt="Twitter" className="w-6 h-6" src="/images/icon-twitter.png" />
+              </a>
+              <a className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-primary-container hover:text-white transition-all shadow-sm" href="#">
+                <img alt="TikTok" className="w-6 h-6" src="/images/icon-tiktok.png" />
+              </a>
+            </div>
+          </div>
+          <div className="relative h-[500px] bg-surface rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+            <div
+              className="absolute inset-0 bg-gray-200"
+              style={{ backgroundImage: "url('/images/map-placeholder.jpg')" }}
+            />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="bg-primary-container text-white p-4 rounded-full shadow-2xl animate-bounce">
+                <span className="material-symbols-outlined text-3xl">pets</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
