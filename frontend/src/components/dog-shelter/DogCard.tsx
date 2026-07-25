@@ -1,8 +1,17 @@
-import type { Dog } from '../../types/dog-shelter'
 import { Badge, Card } from '../ui'
 
 interface DogCardProps {
-  dog: Dog
+  dog: {
+    id: number
+    name: string
+    breed: string
+    age: string
+    gender: string
+    size: string
+    image: string
+    tags: string[]
+    status: string
+  }
 }
 
 export function DogCard({ dog }: DogCardProps) {
