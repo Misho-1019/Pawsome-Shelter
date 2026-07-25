@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dog {
+  id        Int      @id @default(autoincrement())
+  name      String
+  breed     String
+  age       String
+  gender    String
+  size      String
+  image     String
+  tags      String[]
+  status    String   @default("Available")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  adoptions Adoption[]
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  dogName   String
+  quote     String
+  image     String
+  rating    Int      @default(5)
+  createdAt DateTime @default(now())
+}
+
+model Adoption {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  message   String?
+  dogId     Int?
+  dog       Dog?     @relation(fields: [dogId], references: [id])
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Content {
+  id        Int      @id @default(autoincrement())
+  section   String   @unique
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
