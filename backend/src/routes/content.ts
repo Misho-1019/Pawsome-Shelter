@@ -18,7 +18,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/:section', async (req: Request, res: Response) => {
   try {
     const content = await prisma.content.findUnique({
-      where: { section: req.params.section }
+      where: { section: (req.params.section as string) }
     })
     if (!content) return res.status(404).json({ error: 'Section not found' })
     res.json(content)
@@ -32,9 +32,9 @@ router.put('/:section', authenticate, requireAdmin, async (req: AuthRequest, res
   try {
     const { data } = req.body
     const content = await prisma.content.upsert({
-      where: { section: req.params.section },
+      where: { section: (req.params.section as string) },
       update: { data },
-      create: { section: req.params.section, data }
+      create: { section: (req.params.section as string), data }
     })
     res.json(content)
   } catch (error) {

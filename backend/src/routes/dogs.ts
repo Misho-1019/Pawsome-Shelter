@@ -10,8 +10,8 @@ router.get('/', async (req: Request, res: Response) => {
     const { size, status } = req.query
     const where: any = {}
 
-    if (size) where.size = size
-    if (status) where.status = status
+    if (size) where.size = size as string
+    if (status) where.status = status as string
 
     const dogs = await prisma.dog.findMany({ where, orderBy: { createdAt: 'desc' } })
     res.json(dogs)
@@ -23,7 +23,7 @@ router.get('/', async (req: Request, res: Response) => {
 // GET /api/dogs/:id - Get dog by ID (public)
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const dog = await prisma.dog.findUnique({ where: { id: parseInt(req.params.id) } })
+    const dog = await prisma.dog.findUnique({ where: { id: parseInt(req.params.id as string) } })
     if (!dog) return res.status(404).json({ error: 'Dog not found' })
     res.json(dog)
   } catch (error) {
@@ -49,7 +49,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
   try {
     const { name, breed, age, gender, size, image, tags, status } = req.body
     const dog = await prisma.dog.update({
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(req.params.id as string) },
       data: { name, breed, age, gender, size, image, tags, status }
     })
     res.json(dog)
@@ -61,7 +61,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
 // DELETE /api/dogs/:id - Delete dog (admin)
 router.delete('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    await prisma.dog.delete({ where: { id: parseInt(req.params.id) } })
+    await prisma.dog.delete({ where: { id: parseInt(req.params.id as string) } })
     res.json({ message: 'Dog deleted successfully' })
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete dog' })

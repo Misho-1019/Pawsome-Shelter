@@ -32,7 +32,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
   try {
     const { name, dogName, quote, image, rating } = req.body
     const testimonial = await prisma.testimonial.update({
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(req.params.id as string) },
       data: { name, dogName, quote, image, rating }
     })
     res.json(testimonial)
@@ -44,7 +44,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
 // DELETE /api/testimonials/:id - Delete testimonial (admin)
 router.delete('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
-    await prisma.testimonial.delete({ where: { id: parseInt(req.params.id) } })
+    await prisma.testimonial.delete({ where: { id: parseInt(req.params.id as string) } })
     res.json({ message: 'Testimonial deleted successfully' })
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete testimonial' })

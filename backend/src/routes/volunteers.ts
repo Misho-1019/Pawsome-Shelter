@@ -43,7 +43,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
   try {
     const { status } = req.body
     const volunteer = await prisma.volunteer.update({
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(req.params.id as string) },
       data: { status }
     })
     res.json(volunteer)

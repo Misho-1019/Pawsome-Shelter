@@ -47,7 +47,7 @@ router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Res
   try {
     const { status } = req.body
     const adoption = await prisma.adoption.update({
-      where: { id: parseInt(req.params.id) },
+      where: { id: parseInt(req.params.id as string) },
       data: { status }
     })
     res.json(adoption)

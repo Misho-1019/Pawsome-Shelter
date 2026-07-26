@@ -10,13 +10,13 @@ describe('Full Stack Integration', () => {
   describe('Backend API', () => {
     it('should be healthy', async () => {
       const response = await fetch(`${API_BASE}/api/health`)
-      const data = await response.json()
+      const data = await response.json() as { status: string; timestamp: string }
       expect(data.status).toBe('ok')
     })
 
     it('should return dogs from database', async () => {
       const response = await fetch(`${API_BASE}/api/dogs`)
-      const dogs = await response.json()
+      const dogs = await response.json() as any[]
       expect(Array.isArray(dogs)).toBe(true)
       expect(dogs.length).toBe(6)
       expect(dogs[0]).toHaveProperty('name')
@@ -32,7 +32,7 @@ describe('Full Stack Integration', () => {
           password: 'admin123',
         }),
       })
-      const data = await response.json()
+      const data = await response.json() as { token: string; user: any }
       expect(data).toHaveProperty('token')
       expect(data.user).toHaveProperty('email', 'admin@pawsomeshelter.com')
     })
@@ -48,14 +48,14 @@ describe('Full Stack Integration', () => {
           dogId: 1,
         }),
       })
-      const data = await response.json()
+      const data = await response.json() as any
       expect(data).toHaveProperty('id')
       expect(data).toHaveProperty('status', 'Pending')
     })
 
     it('should return testimonials', async () => {
       const response = await fetch(`${API_BASE}/api/testimonials`)
-      const testimonials = await response.json()
+      const testimonials = await response.json() as any[]
       expect(Array.isArray(testimonials)).toBe(true)
       expect(testimonials.length).toBe(3)
     })
@@ -76,11 +76,9 @@ describe('Full Stack Integration', () => {
 
   describe('Data Flow', () => {
     it('frontend should be able to fetch dogs from backend', async () => {
-      // This simulates what the frontend useDogs hook does
       const response = await fetch(`${API_BASE}/api/dogs`)
-      const dogs = await response.json()
+      const dogs = await response.json() as any[]
 
-      // Verify the data structure matches what the frontend expects
       dogs.forEach((dog: any) => {
         expect(dog).toHaveProperty('id')
         expect(dog).toHaveProperty('name')
@@ -95,21 +93,20 @@ describe('Full Stack Integration', () => {
     })
 
     it('frontend should be able to submit adoption inquiry', async () => {
-      // This simulates what the frontend adoption form does
       const response = await fetch(`${API_BASE}/api/adoptions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: 'Flow Test User',
           email: 'flow@test.com',
-          phone: '555-9999',
+          phone: '+359888123456',
           message: 'Testing the complete adoption flow',
           dogId: 2,
         }),
       })
 
       expect(response.ok).toBe(true)
-      const adoption = await response.json()
+      const adoption = await response.json() as any
       expect(adoption).toHaveProperty('id')
       expect(adoption).toHaveProperty('name', 'Flow Test User')
       expect(adoption).toHaveProperty('status', 'Pending')
