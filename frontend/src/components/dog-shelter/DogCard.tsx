@@ -12,11 +12,13 @@ interface DogCardProps {
     tags: string[]
     status: string
   }
+  onClick: () => void
+  onAdoptClick: () => void
 }
 
-export function DogCard({ dog }: DogCardProps) {
+export function DogCard({ dog, onClick, onAdoptClick }: DogCardProps) {
   return (
-    <Card className="group">
+    <Card className="group cursor-pointer" onClick={onClick}>
       <div className="relative h-72 overflow-hidden">
         <img
           src={dog.image}
@@ -29,7 +31,7 @@ export function DogCard({ dog }: DogCardProps) {
           </Badge>
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-6" onClick={(e) => e.stopPropagation()}>
         <h3 className="font-heading text-xl text-on-surface mb-1">{dog.name}</h3>
         <p className="text-on-surface-variant text-sm mb-4">
           {dog.breed} • {dog.age} • {dog.gender}
@@ -39,7 +41,13 @@ export function DogCard({ dog }: DogCardProps) {
             <Badge key={tag}>{tag}</Badge>
           ))}
         </div>
-        <button className="w-full border-2 border-secondary text-secondary font-body text-sm font-semibold py-3 rounded-xl hover:bg-secondary hover:text-white transition-all flex justify-center items-center gap-2">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onAdoptClick()
+          }}
+          className="w-full border-2 border-secondary text-secondary font-body text-sm font-semibold py-3 rounded-xl hover:bg-secondary hover:text-white transition-all flex justify-center items-center gap-2"
+        >
           Meet Me
           <span className="material-symbols-outlined text-[18px]">favorite</span>
         </button>

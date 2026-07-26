@@ -113,7 +113,7 @@ export const adoptionSteps: AdoptionStep[] = [
     step: 3,
     title: 'Welcome Home',
     description: "After a meet-and-greet and home visit, you're ready to start your life-long journey together.",
-    icon: 'home_heart',
+    icon: 'home',
   },
 ]
 

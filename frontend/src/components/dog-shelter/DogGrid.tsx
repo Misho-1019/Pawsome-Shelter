@@ -1,12 +1,17 @@
 import { useState } from 'react'
 import { useDogs } from '../../hooks/useDogs'
 import { DogCard } from './DogCard'
+import { DogDetailDrawer } from './DogDetailDrawer'
+import { AdoptionModal } from './AdoptionModal'
 
 const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors']
 
 export function DogGrid() {
   const [activeFilter, setActiveFilter] = useState('All')
   const { dogs, loading, error } = useDogs()
+  const [selectedDog, setSelectedDog] = useState<any>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [isAdoptOpen, setIsAdoptOpen] = useState(false)
 
   const filteredDogs = dogs.filter((dog) => {
     if (activeFilter === 'All') return true
@@ -14,6 +19,22 @@ export function DogGrid() {
     if (activeFilter === 'Seniors') return parseInt(dog.age) >= 7
     return dog.size === activeFilter
   })
+
+  const handleDogClick = (dog: any) => {
+    setSelectedDog(dog)
+    setIsDetailOpen(true)
+  }
+
+  const handleAdoptClick = (dog: any) => {
+    setSelectedDog(dog)
+    setIsDetailOpen(false)
+    setIsAdoptOpen(true)
+  }
+
+  const handleAdoptFromDetail = () => {
+    setIsDetailOpen(false)
+    setIsAdoptOpen(true)
+  }
 
   if (error) {
     return (
@@ -67,14 +88,50 @@ export function DogGrid() {
               </div>
             ))}
           </div>
+        ) : filteredDogs.length === 0 ? (
+          <div className="text-center py-16">
+            <span className="material-symbols-outlined text-7xl text-on-surface-variant mb-4 block">
+              search_off
+            </span>
+            <h3 className="font-heading text-xl mb-2">No dogs found</h3>
+            <p className="text-on-surface-variant mb-4">
+              Try a different filter or check back later for new arrivals.
+            </p>
+            <button
+              onClick={() => setActiveFilter('All')}
+              className="text-primary font-semibold hover:underline"
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {filteredDogs.map((dog) => (
-              <DogCard key={dog.id} dog={dog} />
+              <DogCard
+                key={dog.id}
+                dog={dog}
+                onClick={() => handleDogClick(dog)}
+                onAdoptClick={() => handleAdoptClick(dog)}
+              />
             ))}
           </div>
         )}
       </div>
+
+      {/* Dog Detail Drawer */}
+      <DogDetailDrawer
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        dog={selectedDog}
+        onAdoptClick={handleAdoptFromDetail}
+      />
+
+      {/* Adoption Modal */}
+      <AdoptionModal
+        isOpen={isAdoptOpen}
+        onClose={() => setIsAdoptOpen(false)}
+        dog={selectedDog}
+      />
     </section>
   )
 }

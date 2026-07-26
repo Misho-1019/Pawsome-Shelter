@@ -2,6 +2,34 @@ import { useState } from 'react'
 
 export function GetInvolved() {
   const [donationAmount, setDonationAmount] = useState(50)
+  const [customAmount, setCustomAmount] = useState('')
+  const [isCustom, setIsCustom] = useState(false)
+
+  const handleAmountClick = (amount: number) => {
+    setDonationAmount(amount)
+    setIsCustom(false)
+    setCustomAmount('')
+  }
+
+  const handleCustomClick = () => {
+    setIsCustom(true)
+    setDonationAmount(0)
+  }
+
+  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^0-9]/g, '')
+    setCustomAmount(value)
+    if (value && parseInt(value) >= 1) {
+      setDonationAmount(parseInt(value))
+    }
+  }
+
+  const handleDonate = () => {
+    const amount = isCustom ? parseInt(customAmount) : donationAmount
+    if (amount >= 1) {
+      alert(`Thank you for your $${amount} donation! (This is a demo - no actual payment will be processed)`)
+    }
+  }
 
   return (
     <section className="py-32 bg-surface-container" id="volunteer">
@@ -40,13 +68,13 @@ export function GetInvolved() {
             <p className="font-body text-surface-container mb-10">
               Your contribution directly funds medical care, food, and warm beds for our residents.
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               {[25, 50, 100].map((amount) => (
                 <button
                   key={amount}
-                  onClick={() => setDonationAmount(amount)}
+                  onClick={() => handleAmountClick(amount)}
                   className={`border-2 rounded-xl py-4 font-body text-sm font-semibold transition-all ${
-                    donationAmount === amount
+                    !isCustom && donationAmount === amount
                       ? 'border-primary-container bg-primary-container/20 text-white'
                       : 'border-white/20 hover:bg-white/10'
                   }`}
@@ -54,13 +82,53 @@ export function GetInvolved() {
                   ${amount}
                 </button>
               ))}
-              <button className="border-2 border-white/20 rounded-xl py-4 font-body text-sm font-semibold hover:bg-white/10 transition-all">
+              <button
+                onClick={handleCustomClick}
+                className={`border-2 rounded-xl py-4 font-body text-sm font-semibold transition-all ${
+                  isCustom
+                    ? 'border-primary-container bg-primary-container/20 text-white'
+                    : 'border-white/20 hover:bg-white/10'
+                }`}
+              >
                 Custom
               </button>
             </div>
-            <button className="w-full bg-primary-container text-white font-heading text-xl py-5 rounded-xl hover:scale-[1.02] active:scale-100 transition-all shadow-lg mt-auto">
-              Make a Donation
-            </button>
+
+            {/* Custom Amount Input */}
+            {isCustom && (
+              <div className="mb-4 animate-fade-in">
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60 font-body text-lg">$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={customAmount}
+                    onChange={handleCustomChange}
+                    placeholder="Enter amount"
+                    className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-4 pl-8 pr-4 font-body text-lg text-white placeholder-white/40 focus:outline-none focus:border-primary-container transition-colors"
+                    autoFocus
+                  />
+                </div>
+                {customAmount && parseInt(customAmount) < 1 && (
+                  <p className="text-red-400 text-sm mt-2">Minimum donation is $1</p>
+                )}
+              </div>
+            )}
+
+            <div className="mt-auto pt-4">
+              <p className="text-white/60 text-sm mb-4 text-center">
+                {isCustom && customAmount
+                  ? `Donating: $${customAmount}`
+                  : `Donating: $${donationAmount}`}
+              </p>
+              <button
+                onClick={handleDonate}
+                disabled={isCustom && (!customAmount || parseInt(customAmount) < 1)}
+                className="w-full bg-primary-container text-white font-heading text-xl py-5 rounded-xl hover:scale-[1.02] active:scale-100 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              >
+                Make a Donation
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -50,6 +50,17 @@ export function HeroSection() {
           </div>
         </div>
       </div>
+
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+        <button
+          onClick={() => scrollToSection('#dogs')}
+          className="text-white/80 hover:text-white transition-colors animate-bounce"
+          aria-label="Scroll to dogs"
+        >
+          <span className="material-symbols-outlined text-4xl">keyboard_double_arrow_down</span>
+        </button>
+      </div>
     </section>
   )
 }

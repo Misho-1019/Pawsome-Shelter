@@ -25,7 +25,9 @@ export function ContactSection() {
                 </div>
                 <div>
                   <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Call Us</h4>
-                  <p className="font-body text-lg">(555) PAW-SOME • (555) 729-7663</p>
+                  <a href="tel:+15557297663" className="font-body text-lg hover:text-primary transition-colors inline-flex items-center gap-2">
+                    (555) PAW-SOME • (555) 729-7663
+                  </a>
                 </div>
               </div>
               <div className="flex gap-6 items-start">
@@ -37,6 +39,17 @@ export function ContactSection() {
                   <p className="font-body text-lg">
                     Mon - Fri: 10 AM - 6 PM<br />Sat - Sun: 11 AM - 4 PM
                   </p>
+                </div>
+              </div>
+              <div className="flex gap-6 items-start">
+                <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-primary shrink-0">
+                  <span className="material-symbols-outlined">mail</span>
+                </div>
+                <div>
+                  <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Email</h4>
+                  <a href="mailto:info@pawsomeshelter.com" className="font-body text-lg hover:text-primary transition-colors">
+                    info@pawsomeshelter.com
+                  </a>
                 </div>
               </div>
             </div>
