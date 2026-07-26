@@ -106,7 +106,23 @@
   animation: shake 0.5s ease-in-out;
 }
 
-/* Phone Input Custom Styles */
+/* ===== PHONE INPUT STYLES ===== */
+/* Using library's CSS variables for customization */
+
+:root {
+  /* Flag styling */
+  --PhoneInputCountryFlag-height: 18px;
+  --PhoneInputCountryFlag-borderColor: rgba(0, 0, 0, 0.1);
+  
+  /* Arrow styling */
+  --PhoneInputCountrySelectArrow-color: #8A7268;
+  --PhoneInputCountrySelectArrow-opacity: 0.6;
+  
+  /* Focus styling */
+  --PhoneInput-color--focus: #E97A3D;
+}
+
+/* Main container */
 .PhoneInput {
   display: flex;
   align-items: center;
@@ -114,47 +130,93 @@
   border-radius: 0.75rem;
   overflow: hidden;
   transition: border-color 0.2s ease;
+  background: white;
 }
 
 .PhoneInput:focus-within {
   border-color: #E97A3D;
 }
 
+/* Country selector button */
 .PhoneInputCountry {
   display: flex;
   align-items: center;
+  gap: 6px;
   padding: 0.75rem;
   background: #FFF1EB;
   border-right: 2px solid #DDC1B4;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  position: relative;
 }
 
 .PhoneInputCountry:hover {
   background: #F8E4DC;
 }
 
-.PhoneInputCountrySelect {
-  appearance: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0;
-  width: 0;
-  height: 0;
-}
-
+/* Country flag icon */
 .PhoneInputCountryIcon {
   width: 24px;
   height: 18px;
   border-radius: 3px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
 }
 
+/* Country select dropdown */
+.PhoneInputCountrySelect {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  min-width: 200px;
+  background: white;
+  border: 1px solid #DDC1B4;
+  border-radius: 0 0 0.75rem 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.PhoneInputCountrySelect option {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.PhoneInputCountrySelect option:hover {
+  background: #FFF1EB;
+}
+
+.PhoneInputCountrySelect option:checked {
+  background: #E97A3D;
+  color: white;
+}
+
+/* Dropdown arrow */
 .PhoneInputCountrySelectArrow {
-  display: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #8A7268;
+  margin-left: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
 }
 
+.PhoneInputCountry:hover .PhoneInputCountrySelectArrow {
+  opacity: 1;
+}
+
+/* Phone number input */
 .PhoneInputInput {
   flex: 1;
   padding: 0.75rem 1rem;
@@ -168,4 +230,9 @@
 
 .PhoneInputInput::placeholder {
   color: #8A7268;
+}
+
+/* International icon (when no country selected) */
+.PhoneInputCountryIcon--international {
+  background: linear-gradient(135deg, #8CF5E4 0%, #2A9D8F 100%);
 }

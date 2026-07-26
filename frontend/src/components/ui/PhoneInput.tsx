@@ -17,7 +17,6 @@ export function PhoneInput({ value, onChange, placeholder = 'Enter phone number'
         value={value || undefined}
         onChange={(val) => onChange(val || '')}
         placeholder={placeholder}
-        className="w-full"
       />
     </div>
   )

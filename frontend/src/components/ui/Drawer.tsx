@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 
 interface DrawerProps {
   isOpen: boolean
@@ -15,8 +15,8 @@ const sizeClasses = {
 }
 
 export function Drawer({ isOpen, onClose, title, children, size = 'md' }: DrawerProps) {
-  const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed')
-  const contentRef = useRef<HTMLDivElement>(null)
+  const [shouldRender, setShouldRender] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
@@ -24,62 +24,45 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
 
   useEffect(() => {
     if (isOpen) {
+      setShouldRender(true)
       document.addEventListener('keydown', handleKeyDown)
       document.body.style.overflow = 'hidden'
-      setAnimationState('opening')
-      // Transition to 'open' after animation completes
-      const timer = setTimeout(() => setAnimationState('open'), 500)
-      return () => {
-        clearTimeout(timer)
-        document.removeEventListener('keydown', handleKeyDown)
-        document.body.style.overflow = 'unset'
-      }
-    } else if (animationState === 'open') {
-      // Start closing animation
-      setAnimationState('closing')
+      // Small delay to ensure DOM is ready for animation
+      requestAnimationFrame(() => setIsAnimating(true))
+    } else {
+      setIsAnimating(false)
       document.body.style.overflow = 'unset'
-      const timer = setTimeout(() => setAnimationState('closed'), 400)
+      // Wait for exit animation to complete before unmounting
+      const timer = setTimeout(() => setShouldRender(false), 400)
       return () => clearTimeout(timer)
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = 'unset'
     }
   }, [isOpen, handleKeyDown])
 
-  // Don't render if closed
-  if (animationState === 'closed') return null
-
-  const isAnimatingIn = animationState === 'opening'
-  const isAnimatingOut = animationState === 'closing'
+  if (!shouldRender) return null
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50"
-        style={{
-          animation: isAnimatingIn
-            ? 'backdrop-fade-in 0.4s ease-out forwards'
-            : isAnimatingOut
-            ? 'backdrop-fade-out 0.3s ease-in forwards'
-            : 'none',
-          opacity: isAnimatingOut ? 0 : undefined,
-        }}
+        className="absolute inset-0 bg-black/50 transition-opacity duration-400"
+        style={{ opacity: isAnimating ? 1 : 0 }}
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer Panel */}
       <div
-        className={`relative ${sizeClasses[size]} h-full bg-white shadow-2xl`}
+        className={`relative ${sizeClasses[size]} h-full bg-white shadow-2xl transition-transform duration-500 ease-out`}
         style={{
-          animation: isAnimatingIn
-            ? 'drawer-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-            : isAnimatingOut
-            ? 'drawer-slide-out 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards'
-            : 'none',
+          transform: isAnimating ? 'translateX(0)' : 'translateX(100%)',
         }}
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        ref={contentRef}
       >
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white border-b border-outline-variant px-6 py-4 flex items-center justify-between">
