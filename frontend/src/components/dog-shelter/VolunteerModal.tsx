@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Drawer } from '../ui'
+import { Drawer, PhoneInput } from '../ui'
 
 interface VolunteerModalProps {
   isOpen: boolean
@@ -21,6 +21,10 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, phone: value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +65,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
     <Drawer isOpen={isOpen} onClose={handleClose} title="Become a Volunteer" size="md">
       <div className="p-6">
         {success ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 animate-scale-in">
             <span className="material-symbols-outlined text-6xl text-secondary mb-4 block">
               check_circle
             </span>
@@ -88,7 +92,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200"
                 placeholder="John Doe"
               />
             </div>
@@ -105,24 +109,20 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200"
                 placeholder="john@example.com"
               />
             </div>
 
-            {/* Phone */}
+            {/* Phone with Country Code */}
             <div>
               <label htmlFor="vol-phone" className="block text-sm font-semibold mb-2">
                 Phone Number
               </label>
-              <input
-                type="tel"
-                id="vol-phone"
-                name="phone"
+              <PhoneInput
                 value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
-                placeholder="(555) 123-4567"
+                onChange={handlePhoneChange}
+                placeholder="Enter phone number"
               />
             </div>
 
@@ -137,7 +137,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
                 value={formData.availability}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors bg-white"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200 bg-white"
               >
                 <option value="">Select availability</option>
                 <option value="weekdays">Weekdays</option>
@@ -158,7 +158,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
                 value={formData.experience}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200 resize-none"
                 placeholder="Tell us about your experience with animals..."
               />
             </div>
@@ -174,14 +174,14 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
                 value={formData.message}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200 resize-none"
                 placeholder="Tell us why you'd like to volunteer..."
               />
             </div>
 
             {/* Error */}
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2">
+              <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2 animate-shake">
                 <span className="material-symbols-outlined">error</span>
                 {error}
               </div>
@@ -191,7 +191,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
             <button
               type="submit"
               disabled={loading || !formData.name || !formData.email || !formData.availability}
-              className="w-full bg-secondary text-white font-semibold py-4 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-secondary text-white font-semibold py-4 rounded-xl hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

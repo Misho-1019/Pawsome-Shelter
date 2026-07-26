@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Drawer } from '../ui'
+import { Drawer, PhoneInput } from '../ui'
 import { useAdoptions } from '../../hooks/useAdoptions'
 
 interface AdoptionModalProps {
@@ -23,6 +23,10 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handlePhoneChange = (value: string) => {
+    setFormData({ ...formData, phone: value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +74,7 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
         </div>
 
         {success ? (
-          <div className="text-center py-12">
+          <div className="text-center py-12 animate-scale-in">
             <span className="material-symbols-outlined text-6xl text-secondary mb-4 block">
               check_circle
             </span>
@@ -93,7 +97,7 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200"
                 placeholder="John Doe"
               />
             </div>
@@ -110,24 +114,20 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200"
                 placeholder="john@example.com"
               />
             </div>
 
-            {/* Phone */}
+            {/* Phone with Country Code */}
             <div>
               <label htmlFor="phone" className="block text-sm font-semibold mb-2">
                 Phone Number
               </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
+              <PhoneInput
                 value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors"
-                placeholder="(555) 123-4567"
+                onChange={handlePhoneChange}
+                placeholder="Enter phone number"
               />
             </div>
 
@@ -142,14 +142,14 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors resize-none"
+                className="w-full px-4 py-3 rounded-xl border-2 border-outline-variant focus:border-primary focus:ring-0 outline-none transition-colors duration-200 resize-none"
                 placeholder="Tell us why you'd like to adopt this dog..."
               />
             </div>
 
             {/* Error */}
             {error && (
-              <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2">
+              <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-2 animate-shake">
                 <span className="material-symbols-outlined">error</span>
                 {error}
               </div>
@@ -159,7 +159,7 @@ export function AdoptionModal({ isOpen, onClose, dog }: AdoptionModalProps) {
             <button
               type="submit"
               disabled={loading || !formData.name || !formData.email}
-              className="w-full bg-primary-container text-white font-semibold py-4 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-primary-container text-white font-semibold py-4 rounded-xl hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
