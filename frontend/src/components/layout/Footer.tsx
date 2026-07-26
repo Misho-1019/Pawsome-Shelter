@@ -18,11 +18,40 @@ const legalLinks = [
 
 export function Footer() {
   const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Newsletter signup:', email)
-    setEmail('')
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch('http://localhost:3001/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to subscribe')
+      }
+
+      setSuccess(true)
+      setEmail('')
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to subscribe')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -43,12 +72,25 @@ export function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email Address"
-                className="flex-1 bg-white border-none rounded-xl px-6 py-3 focus:ring-2 focus:ring-primary-container outline-none"
+                disabled={loading}
+                className="flex-1 bg-white border-none rounded-xl px-6 py-3 focus:ring-2 focus:ring-primary-container outline-none disabled:opacity-50"
               />
-              <Button type="submit" variant="primary">
-                Subscribe
+              <Button type="submit" disabled={loading}>
+                {loading ? '...' : 'Subscribe'}
               </Button>
             </form>
+            {success && (
+              <p className="text-secondary text-sm mt-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                Successfully subscribed!
+              </p>
+            )}
+            {error && (
+              <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px]">error</span>
+                {error}
+              </p>
+            )}
           </div>
 
           <div>

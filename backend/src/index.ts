@@ -7,6 +7,8 @@ import testimonialsRouter from './routes/testimonials'
 import adoptionsRouter from './routes/adoptions'
 import authRouter from './routes/auth'
 import contentRouter from './routes/content'
+import volunteersRouter from './routes/volunteers'
+import newsletterRouter from './routes/newsletter'
 
 dotenv.config()
 
@@ -23,6 +25,8 @@ app.use('/api/testimonials', testimonialsRouter)
 app.use('/api/adoptions', adoptionsRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/content', contentRouter)
+app.use('/api/volunteers', volunteersRouter)
+app.use('/api/newsletter', newsletterRouter)
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -1,4 +1,4 @@
-import { Badge, Card } from '../ui'
+import { Badge, Card, HeartButton } from '../ui'
 
 interface DogCardProps {
   dog: {
@@ -14,9 +14,11 @@ interface DogCardProps {
   }
   onClick: () => void
   onAdoptClick: () => void
+  isFavorite: boolean
+  onToggleFavorite: () => void
 }
 
-export function DogCard({ dog, onClick, onAdoptClick }: DogCardProps) {
+export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavorite }: DogCardProps) {
   return (
     <Card className="group cursor-pointer" onClick={onClick}>
       <div className="relative h-72 overflow-hidden">
@@ -29,6 +31,13 @@ export function DogCard({ dog, onClick, onAdoptClick }: DogCardProps) {
           <Badge variant="status" status={dog.status.toLowerCase() as 'available' | 'pending'}>
             {dog.status}
           </Badge>
+        </div>
+        <div className="absolute top-4 left-4">
+          <HeartButton
+            isFavorite={isFavorite}
+            onClick={onToggleFavorite}
+            size="sm"
+          />
         </div>
       </div>
       <div className="p-6" onClick={(e) => e.stopPropagation()}>

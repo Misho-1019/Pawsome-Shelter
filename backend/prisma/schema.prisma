@@ -53,6 +53,24 @@ model Content {
   updatedAt DateTime @updatedAt
 }
 
+model Volunteer {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String
+  phone        String?
+  availability String
+  experience   String?
+  message      String?
+  status       String   @default("Pending")
+  createdAt    DateTime @default(now())
+}
+
+model Newsletter {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique

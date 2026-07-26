@@ -6,6 +6,7 @@ interface ButtonProps {
   onClick?: () => void
   className?: string
   type?: 'button' | 'submit'
+  disabled?: boolean
 }
 
 export function Button({
@@ -16,8 +17,9 @@ export function Button({
   onClick,
   className = '',
   type = 'button',
+  disabled = false,
 }: ButtonProps) {
-  const base = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 cursor-pointer'
+  const base = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
 
   const variants = {
     primary: 'bg-primary-container text-white hover:opacity-90 active:scale-95',
@@ -39,6 +41,7 @@ export function Button({
       type={type}
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>

@@ -1,20 +1,23 @@
 import { useState } from 'react'
 import { useDogs } from '../../hooks/useDogs'
+import { useFavorites } from '../../hooks/useFavorites'
 import { DogCard } from './DogCard'
 import { DogDetailDrawer } from './DogDetailDrawer'
 import { AdoptionModal } from './AdoptionModal'
 
-const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors']
+const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors', 'Favorites']
 
 export function DogGrid() {
   const [activeFilter, setActiveFilter] = useState('All')
   const { dogs, loading, error } = useDogs()
+  const { isFavorite, toggleFavorite, favoritesCount } = useFavorites()
   const [selectedDog, setSelectedDog] = useState<any>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [isAdoptOpen, setIsAdoptOpen] = useState(false)
 
   const filteredDogs = dogs.filter((dog) => {
     if (activeFilter === 'All') return true
+    if (activeFilter === 'Favorites') return isFavorite(dog.id)
     if (activeFilter === 'Puppies') return dog.age.includes('Month')
     if (activeFilter === 'Seniors') return parseInt(dog.age) >= 7
     return dog.size === activeFilter
@@ -69,7 +72,14 @@ export function DogGrid() {
                     : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
-                {filter}
+                {filter === 'Favorites' ? (
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                    Favorites {favoritesCount > 0 && `(${favoritesCount})`}
+                  </span>
+                ) : (
+                  filter
+                )}
               </button>
             ))}
           </div>
@@ -91,17 +101,21 @@ export function DogGrid() {
         ) : filteredDogs.length === 0 ? (
           <div className="text-center py-16">
             <span className="material-symbols-outlined text-7xl text-on-surface-variant mb-4 block">
-              search_off
+              {activeFilter === 'Favorites' ? 'favorite_border' : 'search_off'}
             </span>
-            <h3 className="font-heading text-xl mb-2">No dogs found</h3>
+            <h3 className="font-heading text-xl mb-2">
+              {activeFilter === 'Favorites' ? 'No favorites yet' : 'No dogs found'}
+            </h3>
             <p className="text-on-surface-variant mb-4">
-              Try a different filter or check back later for new arrivals.
+              {activeFilter === 'Favorites'
+                ? 'Click the heart icon on a dog card to save your favorites.'
+                : 'Try a different filter or check back later for new arrivals.'}
             </p>
             <button
               onClick={() => setActiveFilter('All')}
               className="text-primary font-semibold hover:underline"
             >
-              Clear filters
+              {activeFilter === 'Favorites' ? 'View all dogs' : 'Clear filters'}
             </button>
           </div>
         ) : (
@@ -112,6 +126,8 @@ export function DogGrid() {
                 dog={dog}
                 onClick={() => handleDogClick(dog)}
                 onAdoptClick={() => handleAdoptClick(dog)}
+                isFavorite={isFavorite(dog.id)}
+                onToggleFavorite={() => toggleFavorite(dog.id)}
               />
             ))}
           </div>
