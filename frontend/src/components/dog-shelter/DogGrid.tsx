@@ -4,6 +4,7 @@ import { useFavorites } from '../../hooks/useFavorites'
 import { DogCard } from './DogCard'
 import { DogDetailDrawer } from './DogDetailDrawer'
 import { AdoptionModal } from './AdoptionModal'
+import { FadeIn, StaggerContainer, StaggerItem } from '../ui/animations'
 
 const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors', 'Favorites']
 
@@ -52,38 +53,40 @@ export function DogGrid() {
   return (
     <section className="py-24 bg-surface-bright" id="dogs">
       <div className="max-w-container mx-auto px-4 md:px-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <h2 className="font-heading text-3xl md:text-4xl text-on-surface mb-2">
-              Meet Our Residents
-            </h2>
-            <p className="font-body text-on-surface-variant">
-              Ready for their forever homes. Each one is a unique story waiting to continue with you.
-            </p>
+        <FadeIn direction="up">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div>
+              <h2 className="font-heading text-3xl md:text-4xl text-on-surface mb-2">
+                Meet Our Residents
+              </h2>
+              <p className="font-body text-on-surface-variant">
+                Ready for their forever homes. Each one is a unique story waiting to continue with you.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {filters.map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`px-5 py-2 rounded-full font-body text-sm font-semibold transition-colors ${
+                    activeFilter === filter
+                      ? 'bg-primary-container text-on-primary'
+                      : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
+                >
+                  {filter === 'Favorites' ? (
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                      Favorites {favoritesCount > 0 && `(${favoritesCount})`}
+                    </span>
+                  ) : (
+                    filter
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filter) => (
-              <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-5 py-2 rounded-full font-body text-sm font-semibold transition-colors ${
-                  activeFilter === filter
-                    ? 'bg-primary-container text-on-primary'
-                    : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
-                }`}
-              >
-                {filter === 'Favorites' ? (
-                  <span className="flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                    Favorites {favoritesCount > 0 && `(${favoritesCount})`}
-                  </span>
-                ) : (
-                  filter
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
+        </FadeIn>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
@@ -99,38 +102,41 @@ export function DogGrid() {
             ))}
           </div>
         ) : filteredDogs.length === 0 ? (
-          <div className="text-center py-16">
-            <span className="material-symbols-outlined text-7xl text-on-surface-variant mb-4 block">
-              {activeFilter === 'Favorites' ? 'favorite_border' : 'search_off'}
-            </span>
-            <h3 className="font-heading text-xl mb-2">
-              {activeFilter === 'Favorites' ? 'No favorites yet' : 'No dogs found'}
-            </h3>
-            <p className="text-on-surface-variant mb-4">
-              {activeFilter === 'Favorites'
-                ? 'Click the heart icon on a dog card to save your favorites.'
-                : 'Try a different filter or check back later for new arrivals.'}
-            </p>
-            <button
-              onClick={() => setActiveFilter('All')}
-              className="text-primary font-semibold hover:underline"
-            >
-              {activeFilter === 'Favorites' ? 'View all dogs' : 'Clear filters'}
-            </button>
-          </div>
+          <FadeIn direction="up">
+            <div className="text-center py-16">
+              <span className="material-symbols-outlined text-7xl text-on-surface-variant mb-4 block">
+                {activeFilter === 'Favorites' ? 'favorite_border' : 'search_off'}
+              </span>
+              <h3 className="font-heading text-xl mb-2">
+                {activeFilter === 'Favorites' ? 'No favorites yet' : 'No dogs found'}
+              </h3>
+              <p className="text-on-surface-variant mb-4">
+                {activeFilter === 'Favorites'
+                  ? 'Click the heart icon on a dog card to save your favorites.'
+                  : 'Try a different filter or check back later for new arrivals.'}
+              </p>
+              <button
+                onClick={() => setActiveFilter('All')}
+                className="text-primary font-semibold hover:underline"
+              >
+                {activeFilter === 'Favorites' ? 'View all dogs' : 'Clear filters'}
+              </button>
+            </div>
+          </FadeIn>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {filteredDogs.map((dog) => (
-              <DogCard
-                key={dog.id}
-                dog={dog}
-                onClick={() => handleDogClick(dog)}
-                onAdoptClick={() => handleAdoptClick(dog)}
-                isFavorite={isFavorite(dog.id)}
-                onToggleFavorite={() => toggleFavorite(dog.id)}
-              />
+              <StaggerItem key={dog.id}>
+                <DogCard
+                  dog={dog}
+                  onClick={() => handleDogClick(dog)}
+                  onAdoptClick={() => handleAdoptClick(dog)}
+                  isFavorite={isFavorite(dog.id)}
+                  onToggleFavorite={() => toggleFavorite(dog.id)}
+                />
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </div>
 

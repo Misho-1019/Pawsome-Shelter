@@ -1,4 +1,5 @@
 import { Button } from '../ui'
+import { FadeIn } from '../ui/animations'
 
 export function HeroSection() {
   const scrollToSection = (href: string) => {
@@ -21,38 +22,44 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 max-w-container mx-auto px-4 md:px-12 w-full text-white">
-        <div className="max-w-2xl animate-fade-in-up">
-          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight drop-shadow-md">
-            Find Your New<br />Best Friend
-          </h1>
-          <p className="font-body text-lg md:text-xl mb-10 opacity-95 max-w-lg drop-shadow-sm">
-            Every dog deserves a loving home. Browse our available dogs and
-            change a life today through our empathetic and professional adoption
-            journey.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => scrollToSection('#dogs')}
-              className="inline-flex items-center gap-2"
-            >
-              Adopt Now
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </Button>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => scrollToSection('#process')}
-            >
-              Learn How It Works
-            </Button>
-          </div>
+        <div className="max-w-2xl">
+          <FadeIn delay={0.2} direction="up">
+            <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight drop-shadow-md">
+              Find Your New<br />Best Friend
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.4} direction="up">
+            <p className="font-body text-lg md:text-xl mb-10 opacity-95 max-w-lg drop-shadow-sm">
+              Every dog deserves a loving home. Browse our available dogs and
+              change a life today through our empathetic and professional adoption
+              journey.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.6} direction="up">
+            <div className="flex flex-wrap gap-4">
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => scrollToSection('#dogs')}
+                className="inline-flex items-center gap-2"
+              >
+                Adopt Now
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => scrollToSection('#process')}
+              >
+                Learn How It Works
+              </Button>
+            </div>
+          </FadeIn>
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <FadeIn delay={1} direction="up" className="absolute bottom-8 left-1/2 -translate-x-1/2">
         <button
           onClick={() => scrollToSection('#dogs')}
           className="text-white/80 hover:text-white transition-colors animate-bounce"
@@ -60,7 +67,7 @@ export function HeroSection() {
         >
           <span className="material-symbols-outlined text-4xl">keyboard_double_arrow_down</span>
         </button>
-      </div>
+      </FadeIn>
     </section>
   )
 }

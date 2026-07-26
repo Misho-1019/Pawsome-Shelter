@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
+import { sendNewsletterWelcome } from '../services/email'
 
 const router = Router()
 
@@ -18,6 +19,14 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     const subscriber = await prisma.newsletter.create({ data: { email } })
+
+    // Send welcome email (don't fail if email fails)
+    try {
+      await sendNewsletterWelcome(email)
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError)
+    }
+
     res.status(201).json({ message: 'Successfully subscribed to newsletter', id: subscriber.id })
   } catch (error) {
     res.status(500).json({ error: 'Failed to subscribe to newsletter' })
