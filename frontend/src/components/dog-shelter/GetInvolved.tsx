@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { VolunteerModal } from './VolunteerModal'
+import { VolunteerDrawer } from './VolunteerDrawer'
 import { SlideIn } from '../ui/animations'
 import { useToast } from '../ui/Toast'
 
@@ -148,7 +148,7 @@ export function GetInvolved() {
         </div>
       </section>
 
-      <VolunteerModal isOpen={isVolunteerOpen} onClose={() => setIsVolunteerOpen(false)} />
+      <VolunteerDrawer isOpen={isVolunteerOpen} onClose={() => setIsVolunteerOpen(false)} />
     </>
   )
 }

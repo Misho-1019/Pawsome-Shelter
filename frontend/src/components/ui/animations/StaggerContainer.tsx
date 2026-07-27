@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { usePrefersReducedMotion } from '../../../hooks/usePrefersReducedMotion'
 
 interface StaggerContainerProps {
   children: React.ReactNode
@@ -7,10 +8,6 @@ interface StaggerContainerProps {
   className?: string
   once?: boolean
 }
-
-const prefersReducedMotion = typeof window !== 'undefined'
-  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  : false
 
 export function StaggerContainer({
   children,
@@ -20,6 +17,7 @@ export function StaggerContainer({
 }: StaggerContainerProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   return (
     <motion.div

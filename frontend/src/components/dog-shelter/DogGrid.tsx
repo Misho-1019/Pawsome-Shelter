@@ -1,51 +1,58 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useDogs } from '../../hooks/useDogs'
 import { useFavorites } from '../../hooks/useFavorites'
 import { DogCard } from './DogCard'
 import { DogDetailDrawer } from './DogDetailDrawer'
-import { AdoptionModal } from './AdoptionModal'
+import { AdoptionDrawer } from './AdoptionDrawer'
+import { SkeletonCard } from '../ui/Skeleton'
 import { FadeIn, StaggerContainer, StaggerItem } from '../ui/animations'
 import type { Dog } from '../../types/dog-shelter'
 
-const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors', 'Favorites']
+const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors', 'Favorites'] as const
+type Filter = (typeof filters)[number]
 
 export function DogGrid() {
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [activeFilter, setActiveFilter] = useState<Filter>('All')
   const { dogs, loading, error } = useDogs()
   const { isFavorite, toggleFavorite, favoritesCount } = useFavorites()
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [isAdoptOpen, setIsAdoptOpen] = useState(false)
 
-  const filteredDogs = dogs.filter((dog) => {
-    if (activeFilter === 'All') return true
-    if (activeFilter === 'Favorites') return isFavorite(dog.id)
-    if (activeFilter === 'Puppies') return dog.ageMonths < 12
-    if (activeFilter === 'Seniors') return dog.ageMonths >= 84 // 7+ years
-    return dog.size === activeFilter
-  })
+  const filteredDogs = useMemo(() => {
+    return dogs.filter((dog) => {
+      if (activeFilter === 'All') return true
+      if (activeFilter === 'Favorites') return isFavorite(dog.id)
+      if (activeFilter === 'Puppies') return dog.ageMonths < 12
+      if (activeFilter === 'Seniors') return dog.ageMonths >= 84 // 7+ years
+      return dog.size === activeFilter
+    })
+  }, [dogs, activeFilter, isFavorite])
 
-  const handleDogClick = (dog: Dog) => {
+  const handleDogClick = useCallback((dog: Dog) => {
     setSelectedDog(dog)
     setIsDetailOpen(true)
-  }
+  }, [])
 
-  const handleAdoptClick = (dog: Dog) => {
+  const handleAdoptClick = useCallback((dog: Dog) => {
     setSelectedDog(dog)
     setIsDetailOpen(false)
     setIsAdoptOpen(true)
-  }
+  }, [])
 
-  const handleAdoptFromDetail = () => {
+  const handleAdoptFromDetail = useCallback(() => {
     setIsDetailOpen(false)
     setIsAdoptOpen(true)
-  }
+  }, [])
+
+  const handleDetailClose = useCallback(() => setIsDetailOpen(false), [])
+  const handleAdoptClose = useCallback(() => setIsAdoptOpen(false), [])
 
   if (error) {
     return (
       <section className="py-24 bg-surface-bright" id="dogs">
         <div className="max-w-container mx-auto px-4 md:px-12 text-center">
-          <p className="text-red-500">Error loading dogs: {error}</p>
+          <p className="text-error">Error loading dogs: {error}</p>
         </div>
       </section>
     )
@@ -93,14 +100,7 @@ export function DogGrid() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter" aria-busy={loading} aria-live="polite">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-premium animate-pulse">
-                <div className="h-72 bg-gray-200" />
-                <div className="p-6 space-y-4">
-                  <div className="h-6 bg-gray-200 rounded w-1/3" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="h-10 bg-gray-200 rounded" />
-                </div>
-              </div>
+              <SkeletonCard key={i} />
             ))}
           </div>
         ) : filteredDogs.length === 0 ? (
@@ -131,10 +131,10 @@ export function DogGrid() {
               <StaggerItem key={dog.id}>
                 <DogCard
                   dog={dog}
-                  onClick={() => handleDogClick(dog)}
-                  onAdoptClick={() => handleAdoptClick(dog)}
+                  onClick={handleDogClick}
+                  onAdoptClick={handleAdoptClick}
                   isFavorite={isFavorite(dog.id)}
-                  onToggleFavorite={() => toggleFavorite(dog.id)}
+                  onToggleFavorite={toggleFavorite}
                 />
               </StaggerItem>
             ))}
@@ -142,18 +142,16 @@ export function DogGrid() {
         )}
       </div>
 
-      {/* Dog Detail Drawer */}
       <DogDetailDrawer
         isOpen={isDetailOpen}
-        onClose={() => setIsDetailOpen(false)}
+        onClose={handleDetailClose}
         dog={selectedDog}
         onAdoptClick={handleAdoptFromDetail}
       />
 
-      {/* Adoption Modal */}
-      <AdoptionModal
+      <AdoptionDrawer
         isOpen={isAdoptOpen}
-        onClose={() => setIsAdoptOpen(false)}
+        onClose={handleAdoptClose}
         dog={selectedDog}
       />
     </section>

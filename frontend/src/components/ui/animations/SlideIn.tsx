@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { usePrefersReducedMotion } from '../../../hooks/usePrefersReducedMotion'
 
 interface SlideInProps {
   children: React.ReactNode
@@ -17,10 +18,6 @@ const slideVariants = {
   bottom: { hidden: { opacity: 0, y: 100 }, visible: { opacity: 1, y: 0 } },
 }
 
-const prefersReducedMotion = typeof window !== 'undefined'
-  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  : false
-
 export function SlideIn({
   children,
   from,
@@ -31,6 +28,7 @@ export function SlideIn({
 }: SlideInProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   return (
     <motion.div

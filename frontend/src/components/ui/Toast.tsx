@@ -27,6 +27,7 @@ export function useToast() {
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
   const timeoutRefs = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
+  const idCounter = useRef(0)
 
   const removeToast = useCallback((id: number) => {
     const timeout = timeoutRefs.current.get(id)
@@ -38,7 +39,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addToast = useCallback((message: string, type: ToastType = 'info') => {
-    const id = Date.now()
+    const id = ++idCounter.current
     setToasts((prev) => [...prev, { id, message, type }])
 
     const timeout = setTimeout(() => {
@@ -50,6 +51,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     return () => {
       timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
+      timeoutRefs.current.clear()
     }
   }, [])
 

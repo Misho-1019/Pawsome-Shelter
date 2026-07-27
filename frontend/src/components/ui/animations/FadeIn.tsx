@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { usePrefersReducedMotion } from '../../../hooks/usePrefersReducedMotion'
 
 interface FadeInProps {
   children: React.ReactNode
@@ -18,10 +19,6 @@ const directionVariants = {
   none: { hidden: { opacity: 0 }, visible: { opacity: 1 } },
 }
 
-const prefersReducedMotion = typeof window !== 'undefined'
-  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  : false
-
 export function FadeIn({
   children,
   delay = 0,
@@ -32,6 +29,7 @@ export function FadeIn({
 }: FadeInProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   return (
     <motion.div

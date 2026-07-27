@@ -1,23 +1,34 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 const FAVORITES_KEY = 'pawsome-favorites'
 
+function readFavorites(): number[] {
+  if (typeof window === 'undefined') return []
+  const stored = localStorage.getItem(FAVORITES_KEY)
+  if (!stored) return []
+  try {
+    const parsed = JSON.parse(stored)
+    return Array.isArray(parsed) ? parsed.filter((n): n is number => typeof n === 'number') : []
+  } catch {
+    return []
+  }
+}
+
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<number[]>([])
+  const [favorites, setFavorites] = useState<number[]>(readFavorites)
+  const isInitialMount = useRef(true)
 
+  // Persist to localStorage on changes (skip initial mount to avoid redundant write)
   useEffect(() => {
-    const stored = localStorage.getItem(FAVORITES_KEY)
-    if (stored) {
-      try {
-        setFavorites(JSON.parse(stored))
-      } catch {
-        setFavorites([])
-      }
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
     }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+    } catch {
+      // localStorage may be full or disabled (private browsing) — silently ignore
+    }
   }, [favorites])
 
   const toggleFavorite = useCallback((dogId: number) => {

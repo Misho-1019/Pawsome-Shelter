@@ -1,12 +1,13 @@
+import { memo } from 'react'
 import { Badge, Card, HeartButton } from '../ui'
 import type { Dog } from '../../types/dog-shelter'
 
 interface DogCardProps {
   dog: Dog
-  onClick: () => void
-  onAdoptClick: () => void
+  onClick: (dog: Dog) => void
+  onAdoptClick: (dog: Dog) => void
   isFavorite: boolean
-  onToggleFavorite: () => void
+  onToggleFavorite: (dogId: number) => void
 }
 
 function formatAge(months: number): string {
@@ -17,9 +18,9 @@ function formatAge(months: number): string {
   return `${years}Y ${remainingMonths}M`
 }
 
-export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavorite }: DogCardProps) {
+function DogCardComponent({ dog, onClick, onAdoptClick, isFavorite, onToggleFavorite }: DogCardProps) {
   return (
-    <Card className="group cursor-pointer" onClick={onClick}>
+    <Card className="group cursor-pointer" onClick={() => onClick(dog)}>
       <div className="relative h-72 overflow-hidden">
         <img
           src={dog.image}
@@ -35,7 +36,7 @@ export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavori
         <div className="absolute top-4 left-4">
           <HeartButton
             isFavorite={isFavorite}
-            onClick={onToggleFavorite}
+            onClick={() => onToggleFavorite(dog.id)}
             size="sm"
           />
         </div>
@@ -53,7 +54,7 @@ export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavori
         <button
           onClick={(e) => {
             e.stopPropagation()
-            onAdoptClick()
+            onAdoptClick(dog)
           }}
           className="w-full border-2 border-secondary text-secondary font-body text-sm font-semibold py-3 rounded-xl hover:bg-secondary hover:text-white transition-all flex justify-center items-center gap-2"
         >
@@ -64,3 +65,6 @@ export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavori
     </Card>
   )
 }
+
+// Memoize to avoid re-renders when the filter changes for unrelated dogs
+export const DogCard = memo(DogCardComponent)
