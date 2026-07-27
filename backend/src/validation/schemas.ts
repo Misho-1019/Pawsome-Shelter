@@ -22,7 +22,7 @@ export const CreateAdoptionSchema = z.object({
 })
 
 export const UpdateAdoptionSchema = z.object({
-  status: z.enum(['Pending', 'Approved', 'Rejected']),
+  status: z.enum(['Pending', 'InReview', 'MeetGreet', 'Approved', 'Rejected', 'Completed']),
 })
 
 export const CreateTestimonialSchema = z.object({
@@ -56,6 +56,41 @@ export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 })
+
+// Content section schemas
+export const HeroContentSchema = z.object({
+  headline: z.string().min(1).max(200),
+  subtext: z.string().min(1).max(500),
+  ctaText: z.string().min(1).max(50),
+  secondaryText: z.string().min(1).max(50),
+})
+
+export const AboutContentSchema = z.object({
+  title: z.string().min(1).max(200),
+  description: z.string().min(1).max(1000),
+  stats: z.array(z.object({
+    label: z.string().min(1).max(50),
+    value: z.string().min(1).max(20),
+  })).min(1).max(10),
+})
+
+export const ContactContentSchema = z.object({
+  address: z.string().min(1).max(200),
+  phone: z.string().min(1).max(50),
+  hours: z.string().min(1).max(200),
+  social: z.object({
+    facebook: z.string().max(200).default('#'),
+    instagram: z.string().max(200).default('#'),
+    twitter: z.string().max(200).default('#'),
+    tiktok: z.string().max(200).default('#'),
+  }).optional(),
+})
+
+export const ContentSectionSchemas: Record<string, z.ZodSchema> = {
+  hero: HeroContentSchema,
+  about: AboutContentSchema,
+  contact: ContactContentSchema,
+}
 
 export function validate(schema: z.ZodSchema) {
   return (req: { body?: unknown; query?: unknown }, res: { status: (code: number) => { json: (data: unknown) => unknown } }, next: () => void) => {

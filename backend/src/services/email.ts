@@ -126,6 +126,12 @@ function wrapEmail(content: string): string {
 
 // Newsletter welcome email
 export async function sendNewsletterWelcome(email: string) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
+  // Build signed unsubscribe URL (lazy import to avoid circular deps)
+  const { buildUnsubscribeUrl } = await import('../routes/newsletter')
+  const unsubscribeUrl = buildUnsubscribeUrl(email, `${process.env.API_URL || 'http://localhost:3001'}`)
+
   const content = `
     <h1 style="color: #231915; font-size: 28px; margin: 0 0 20px 0;">🎉 Welcome to Pawsome Shelter!</h1>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi there,</p>
@@ -139,10 +145,13 @@ export async function sendNewsletterWelcome(email: string) {
     </table>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 32px;">
       <tr><td align="center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Browse Our Dogs →</a>
+        <a href="${escapeHtml(frontendUrl)}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Browse Our Dogs →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>
+    <p style="color: #564239; font-size: 12px; line-height: 1.6; margin-top: 24px;">
+      <a href="${escapeHtml(unsubscribeUrl)}" style="color: #9E4203; text-decoration: underline;">Unsubscribe from these emails</a>
+    </p>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin-top: 16px;">Woofs and warm regards,<br><strong>The Pawsome Shelter Team</strong></p>
   `
 
@@ -155,6 +164,8 @@ export async function sendNewsletterWelcome(email: string) {
 
 // Adoption inquiry confirmation
 export async function sendAdoptionConfirmation(email: string, name: string, dogName: string) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
   const content = `
     <h1 style="color: #231915; font-size: 28px; margin: 0 0 20px 0;">🐕 Adoption Inquiry Received!</h1>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${escapeHtml(name)},</p>
@@ -168,13 +179,13 @@ export async function sendAdoptionConfirmation(email: string, name: string, dogN
       <h3 style="color: #9E4203; margin: 0 0 16px 0; font-size: 18px;">What happens next:</h3>
       <ol style="color: #564239; font-size: 16px; line-height: 1.8; margin: 0; padding-left: 20px;">
         <li>We'll review your application</li>
-        <li>Schedule a meet-and-greet with ${dogName}</li>
+        <li>Schedule a meet-and-greet with ${escapeHtml(dogName)}</li>
         <li>Complete the adoption process</li>
       </ol>
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
       <tr><td align="center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">View Dog Details →</a>
+        <a href="${escapeHtml(frontendUrl)}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">View Dog Details →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>
@@ -183,13 +194,15 @@ export async function sendAdoptionConfirmation(email: string, name: string, dogN
 
   return sendEmail({
     to: email,
-    subject: `Your Adoption Inquiry for ${dogName} - We're Excited! 🐕`,
+    subject: `Your Adoption Inquiry for ${escapeHtml(dogName)} - We're Excited! 🐕`,
     html: wrapEmail(content),
   })
 }
 
 // Volunteer application confirmation
 export async function sendVolunteerConfirmation(email: string, name: string) {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
+
   const content = `
     <h1 style="color: #231915; font-size: 28px; margin: 0 0 20px 0;">🙋 Volunteer Application Received!</h1>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${escapeHtml(name)},</p>
@@ -209,7 +222,7 @@ export async function sendVolunteerConfirmation(email: string, name: string) {
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
       <tr><td align="center">
-        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#volunteer" style="background-color: #2A9D8F; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Learn More →</a>
+        <a href="${escapeHtml(frontendUrl)}/#volunteer" style="background-color: #2A9D8F; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Learn More →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>

@@ -6,19 +6,26 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
+  // Require admin credentials from environment
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@pawsomeshelter.com'
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) {
+    throw new Error('ADMIN_PASSWORD environment variable must be set. Generate one with: node -e "console.log(require(\'crypto\').randomBytes(16).toString(\'base64url\'))"')
+  }
+
   // Create admin user
-  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10)
+  const hashedPassword = await bcrypt.hash(adminPassword, 10)
   await prisma.user.upsert({
-    where: { email: 'admin@pawsomeshelter.com' },
-    update: {},
+    where: { email: adminEmail },
+    update: { password: hashedPassword },
     create: {
-      email: 'admin@pawsomeshelter.com',
+      email: adminEmail,
       password: hashedPassword,
       name: 'Admin',
       role: 'admin'
     }
   })
-  console.log('Admin user created')
+  console.log(`Admin user created: ${adminEmail}`)
 
   // Create dogs
   const dogs = [

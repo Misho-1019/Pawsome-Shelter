@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import request from 'supertest'
-import express from 'express'
-import cors from 'cors'
 
 // We'll test the API endpoints by making HTTP requests
 const API_BASE = 'http://localhost:3001'
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@pawsomeshelter.com'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || ''
 
 describe('Dogs API', () => {
   it('GET /api/dogs - should return all dogs', async () => {
@@ -54,14 +54,18 @@ describe('Testimonials API', () => {
 
 describe('Auth API', () => {
   it('POST /api/auth/login - should return token for valid credentials', async () => {
+    if (!ADMIN_PASSWORD) {
+      console.warn('ADMIN_PASSWORD not set - skipping login test')
+      return
+    }
     const response = await request(`${API_BASE}`)
       .post('/api/auth/login')
-      .send({ email: 'admin@pawsomeshelter.com', password: 'admin123' })
+      .send({ email: ADMIN_EMAIL, password: ADMIN_PASSWORD })
       .expect(200)
 
     expect(response.body).toHaveProperty('token')
     expect(response.body).toHaveProperty('user')
-    expect(response.body.user).toHaveProperty('email', 'admin@pawsomeshelter.com')
+    expect(response.body.user).toHaveProperty('email', ADMIN_EMAIL)
   })
 
   it('POST /api/auth/login - should return 401 for invalid credentials', async () => {

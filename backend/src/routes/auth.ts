@@ -6,7 +6,14 @@ import { authenticate, AuthRequest } from '../middleware/auth'
 import { LoginSchema, validate } from '../validation/schemas'
 
 const router = Router()
-const JWT_SECRET = process.env.JWT_SECRET!
+
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable must be set')
+  }
+  return secret
+}
 
 // POST /api/auth/login - Admin login
 router.post('/login', validate(LoginSchema), async (req: Request, res: Response) => {
@@ -25,8 +32,8 @@ router.post('/login', validate(LoginSchema), async (req: Request, res: Response)
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
+      getJwtSecret(),
+      { expiresIn: '24h' }
     )
 
     res.json({
@@ -34,6 +41,7 @@ router.post('/login', validate(LoginSchema), async (req: Request, res: Response)
       user: { id: user.id, email: user.email, name: user.name, role: user.role }
     })
   } catch (error) {
+    console.error('Login error:', error)
     res.status(500).json({ error: 'Failed to login' })
   }
 })
@@ -48,6 +56,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
     if (!user) return res.status(404).json({ error: 'User not found' })
     res.json(user)
   } catch (error) {
+    console.error('Auth me error:', error)
     res.status(500).json({ error: 'Failed to fetch user' })
   }
 })
