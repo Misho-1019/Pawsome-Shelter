@@ -3,6 +3,15 @@ import { Request, Response, NextFunction } from 'express'
 const CSRF_HEADER = 'x-csrf-token'
 const CSRF_COOKIE = 'csrf-token'
 
+// Endpoints that don't require CSRF (they have their own protection: credentials for login, signed token for unsubscribe)
+const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login']
+const CSRF_EXEMPT_PREFIXES = ['/api/v1/newsletter/unsubscribe']
+
+function isCsrfExempt(path: string): boolean {
+  if (CSRF_EXEMPT_PATHS.includes(path)) return true
+  return CSRF_EXEMPT_PREFIXES.some((prefix) => path.startsWith(prefix))
+}
+
 function getCsrfSecret(): string {
   const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET
   if (!secret) {
@@ -34,6 +43,10 @@ export function issueCsrfToken(_req: Request, res: Response, next: NextFunction)
 
 export function verifyCsrfToken(req: Request, res: Response, next: NextFunction) {
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next()
+  }
+
+  if (isCsrfExempt(req.path)) {
     return next()
   }
 
