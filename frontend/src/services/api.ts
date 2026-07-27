@@ -1,4 +1,6 @@
-const API_BASE = 'http://localhost:3001/api'
+import { apiUrl } from '../config'
+
+const API_BASE = apiUrl('/api')
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${url}`, {

@@ -9,9 +9,9 @@ interface DrawerProps {
 }
 
 const sizeClasses = {
-  sm: 'w-[400px]',
-  md: 'w-[500px]',
-  lg: 'w-[600px]',
+  sm: 'w-full md:w-[400px]',
+  md: 'w-full md:w-[500px]',
+  lg: 'w-full md:w-[600px]',
 }
 
 export function Drawer({ isOpen, onClose, title, children, size = 'md' }: DrawerProps) {

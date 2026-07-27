@@ -10,7 +10,21 @@ import contentRouter from './routes/content'
 import volunteersRouter from './routes/volunteers'
 import newsletterRouter from './routes/newsletter'
 
+// Load environment variables
 dotenv.config()
+
+// Validate required environment variables
+const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET']
+const missingEnvVars = requiredEnvVars.filter((varName) => !process.env[varName])
+
+if (missingEnvVars.length > 0) {
+  console.error('❌ Missing required environment variables:')
+  missingEnvVars.forEach((varName) => {
+    console.error(`   - ${varName}`)
+  })
+  console.error('\nPlease add them to your .env file.')
+  process.exit(1)
+}
 
 const app = express()
 const PORT = process.env.PORT || 3001
@@ -34,7 +48,9 @@ app.get('/api/health', (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`✅ Server running on http://localhost:${PORT}`)
+  console.log(`   Database: ${process.env.DATABASE_URL ? 'Connected' : '⚠️  Not configured'}`)
+  console.log(`   Email: ${process.env.RESEND_API_KEY ? 'Configured' : '⚠️  Not configured'}`)
 })
 
 export default app

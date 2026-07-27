@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Button } from '../ui'
 import { FadeIn } from '../ui/animations'
+import { useToast } from '../ui/Toast'
 import { PrivacyPolicyModal } from '../dog-shelter/PrivacyPolicyModal'
 import { TermsOfServiceModal } from '../dog-shelter/TermsOfServiceModal'
 import { FAQModal } from '../dog-shelter/FAQModal'
+import { apiUrl } from '../../config'
 
 const quickLinks = [
   { label: 'About Us', href: '#about' },
@@ -23,24 +25,22 @@ const legalLinks = [
 export function Footer() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false)
   const [isTermsOpen, setIsTermsOpen] = useState(false)
   const [isFaqOpen, setIsFaqOpen] = useState(false)
+  const { addToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !email.includes('@')) {
-      setError('Please enter a valid email')
+      addToast('Please enter a valid email', 'error')
       return
     }
 
     setLoading(true)
-    setError(null)
 
     try {
-      const response = await fetch('http://localhost:3001/api/newsletter', {
+      const response = await fetch(apiUrl('/api/newsletter'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -51,11 +51,10 @@ export function Footer() {
         throw new Error(data.error || 'Failed to subscribe')
       }
 
-      setSuccess(true)
+      addToast('Successfully subscribed to newsletter!', 'success')
       setEmail('')
-      setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to subscribe')
+      addToast(err instanceof Error ? err.message : 'Failed to subscribe', 'error')
     } finally {
       setLoading(false)
     }
@@ -92,21 +91,9 @@ export function Footer() {
                   />
                   <Button type="submit" disabled={loading}>
                     {loading ? '...' : 'Subscribe'}
-                  </Button>
-                </form>
-                {success && (
-                  <p className="text-secondary text-sm mt-2 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                    Successfully subscribed!
-                  </p>
-                )}
-                {error && (
-                  <p className="text-red-500 text-sm mt-2 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[16px]">error</span>
-                    {error}
-                  </p>
-                )}
-              </div>
+              </Button>
+            </form>
+          </div>
 
               <div>
                 <h4 className="font-body text-sm font-semibold uppercase tracking-widest text-on-surface mb-6">
