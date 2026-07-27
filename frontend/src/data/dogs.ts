@@ -118,8 +118,8 @@ export const adoptionSteps: AdoptionStep[] = [
 ]
 
 export const shelterStats: ShelterStats[] = [
-  { label: 'Rescued', value: '500+' },
-  { label: 'Happy Families', value: '350+' },
-  { label: 'Years Active', value: '10' },
-  { label: 'Volunteers', value: '50+' },
+  { label: 'Rescued', value: '500+', numericValue: 500 },
+  { label: 'Happy Families', value: '350+', numericValue: 350 },
+  { label: 'Years Active', value: '10', numericValue: 10 },
+  { label: 'Volunteers', value: '50+', numericValue: 50 },
 ]

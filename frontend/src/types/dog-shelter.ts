@@ -29,4 +29,5 @@ export interface AdoptionStep {
 export interface ShelterStats {
   label: string
   value: string
+  numericValue: number
 }

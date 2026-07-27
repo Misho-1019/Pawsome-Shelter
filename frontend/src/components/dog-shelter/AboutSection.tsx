@@ -1,7 +1,39 @@
 import { shelterStats } from '../../data/dogs'
-import { SlideIn, StaggerContainer, StaggerItem } from '../ui/animations'
+import { SlideIn } from '../ui/animations'
+import { useCountUp } from '../../hooks/useCountUp'
+
+interface AnimatedStatProps {
+  value: string
+  numericValue: number
+  label: string
+  colorClass: string
+  borderColor: string
+}
+
+function AnimatedStat({ value, numericValue, label, colorClass, borderColor }: AnimatedStatProps) {
+  const { count, ref } = useCountUp(numericValue, 2000)
+  const hasPlus = value.includes('+')
+
+  return (
+    <div ref={ref} className={`border-l-4 pl-6 ${borderColor}`}>
+      <div className={`font-heading text-4xl leading-none mb-2 ${colorClass}`}>
+        {count}{hasPlus ? '+' : ''}
+      </div>
+      <div className="font-body text-sm font-semibold text-on-surface-variant uppercase tracking-wider">
+        {label}
+      </div>
+    </div>
+  )
+}
 
 export function AboutSection() {
+  const statColors = [
+    { colorClass: 'text-primary', borderColor: 'border-primary-container' },
+    { colorClass: 'text-secondary', borderColor: 'border-secondary' },
+    { colorClass: 'text-tertiary', borderColor: 'border-tertiary-container' },
+    { colorClass: 'text-on-surface', borderColor: 'border-on-surface-variant' },
+  ]
+
   return (
     <section
       className="py-32 bg-white"
@@ -30,32 +62,18 @@ export function AboutSection() {
             <p className="font-body text-on-surface-variant mb-12">
               Our mission is to reduce cognitive load for adopters through organized processes while maintaining the warm, tactile interface of a true community heart. We treat every hound like royalty until they find their kingdom.
             </p>
-            <StaggerContainer className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-8">
               {shelterStats.map((stat, index) => (
-                <StaggerItem key={stat.label}>
-                  <div
-                    className={`border-l-4 pl-6 ${
-                      index === 0 ? 'border-primary-container' :
-                      index === 1 ? 'border-secondary' :
-                      index === 2 ? 'border-tertiary-container' :
-                      'border-on-surface-variant'
-                    }`}
-                  >
-                    <div className={`font-heading text-4xl leading-none mb-2 ${
-                      index === 0 ? 'text-primary' :
-                      index === 1 ? 'text-secondary' :
-                      index === 2 ? 'text-tertiary' :
-                      'text-on-surface'
-                    }`}>
-                      {stat.value}
-                    </div>
-                    <div className="font-body text-sm font-semibold text-on-surface-variant uppercase tracking-wider">
-                      {stat.label}
-                    </div>
-                  </div>
-                </StaggerItem>
+                <AnimatedStat
+                  key={stat.label}
+                  value={stat.value}
+                  numericValue={stat.numericValue}
+                  label={stat.label}
+                  colorClass={statColors[index].colorClass}
+                  borderColor={statColors[index].borderColor}
+                />
               ))}
-            </StaggerContainer>
+            </div>
           </SlideIn>
         </div>
       </div>
