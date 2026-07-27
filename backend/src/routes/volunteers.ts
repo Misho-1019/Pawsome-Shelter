@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
 import { sendVolunteerConfirmation } from '../services/email'
-import { CreateVolunteerSchema, UpdateVolunteerSchema, validateBody } from '../validation/schemas'
+import { CreateVolunteerSchema, UpdateVolunteerSchema, validateBody, PaginationSchema, validateQuery } from '../validation/schemas'
 import { parseId } from '../utils/parseId'
 import { asyncHandler } from '../utils/asyncHandler'
 import { logger } from '../utils/logger'
@@ -10,10 +10,34 @@ import { handlePrismaError } from '../utils/prismaErrorHandler'
 
 const router = Router()
 
-// GET /api/volunteers - List all volunteers (admin)
-router.get('/', authenticate, requireAdmin, asyncHandler(async (_req: AuthRequest, res: Response) => {
-  const volunteers = await prisma.volunteer.findMany({ orderBy: { createdAt: 'desc' } })
-  res.json(volunteers)
+// GET /api/volunteers - List all volunteers (admin, paginated)
+router.get('/', authenticate, requireAdmin, validateQuery(PaginationSchema), asyncHandler(async (req: AuthRequest & { validatedQuery?: { page: number; pageSize: number } }, res: Response) => {
+  const { page = 1, pageSize = 20 } = req.validatedQuery || {}
+
+  const where: Record<string, unknown> = {}
+  if (req.query.status) {
+    where.status = String(req.query.status)
+  }
+
+  const [volunteers, total] = await Promise.all([
+    prisma.volunteer.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.volunteer.count({ where }),
+  ])
+
+  res.json({
+    data: volunteers,
+    meta: {
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    },
+  })
 }))
 
 // GET /api/volunteers/:id - Get volunteer by ID (admin)

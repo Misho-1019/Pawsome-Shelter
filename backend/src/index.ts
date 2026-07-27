@@ -94,7 +94,7 @@ app.use(issueCsrfToken)
 app.use(verifyCsrfToken)
 
 // Health check (no auth, no CSRF, no rate limit, must come before other routes)
-app.get('/api/health', async (_req, res) => {
+app.get('/api/v1/health', async (_req, res) => {
   try {
     // Verify DB connectivity
     await prisma.$queryRaw`SELECT 1`
@@ -114,12 +114,12 @@ app.get('/api/health', async (_req, res) => {
 })
 
 // Liveness probe (for K8s)
-app.get('/api/health/live', (_req, res) => {
+app.get('/api/v1/health/live', (_req, res) => {
   res.json({ status: 'alive', timestamp: new Date().toISOString() })
 })
 
 // Readiness probe (for K8s)
-app.get('/api/health/ready', async (_req, res) => {
+app.get('/api/v1/health/ready', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`
     res.json({ status: 'ready', timestamp: new Date().toISOString() })
@@ -128,14 +128,32 @@ app.get('/api/health/ready', async (_req, res) => {
   }
 })
 
+// API info endpoint
+app.get('/api/v1', (_req, res) => {
+  res.json({
+    name: 'Pawsome Shelter API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/v1/health',
+      dogs: '/api/v1/dogs',
+      testimonials: '/api/v1/testimonials',
+      adoptions: '/api/v1/adoptions',
+      volunteers: '/api/v1/volunteers',
+      newsletter: '/api/v1/newsletter',
+      content: '/api/v1/content',
+      auth: '/api/v1/auth',
+    },
+  })
+})
+
 // Routes with rate limiting
-app.use('/api/dogs', dogsRouter)
-app.use('/api/testimonials', testimonialsRouter)
-app.use('/api/adoptions', strictLimiter, adoptionsRouter)
-app.use('/api/auth', strictLimiter, authRouter)
-app.use('/api/content', contentRouter)
-app.use('/api/volunteers', strictLimiter, volunteersRouter)
-app.use('/api/newsletter', strictLimiter, newsletterRouter)
+app.use('/api/v1/dogs', dogsRouter)
+app.use('/api/v1/testimonials', testimonialsRouter)
+app.use('/api/v1/adoptions', strictLimiter, adoptionsRouter)
+app.use('/api/v1/auth', strictLimiter, authRouter)
+app.use('/api/v1/content', contentRouter)
+app.use('/api/v1/volunteers', strictLimiter, volunteersRouter)
+app.use('/api/v1/newsletter', strictLimiter, newsletterRouter)
 
 // CORS rejection handler
 app.use((err: Error, _req: express.Request, res: express.Response, next: express.NextFunction) => {

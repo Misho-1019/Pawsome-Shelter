@@ -20,8 +20,8 @@ export function DogGrid() {
   const filteredDogs = dogs.filter((dog) => {
     if (activeFilter === 'All') return true
     if (activeFilter === 'Favorites') return isFavorite(dog.id)
-    if (activeFilter === 'Puppies') return dog.age.includes('Month')
-    if (activeFilter === 'Seniors') return parseInt(dog.age) >= 7
+    if (activeFilter === 'Puppies') return dog.ageMonths < 12
+    if (activeFilter === 'Seniors') return dog.ageMonths >= 84 // 7+ years
     return dog.size === activeFilter
   })
 

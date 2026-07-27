@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import { prisma } from '../db/client'
 import { sendNewsletterWelcome } from '../services/email'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
-import { SubscribeNewsletterSchema, validateBody } from '../validation/schemas'
+import { SubscribeNewsletterSchema, validateBody, PaginationSchema, validateQuery } from '../validation/schemas'
 import { asyncHandler } from '../utils/asyncHandler'
 import { logger } from '../utils/logger'
 import { handlePrismaError } from '../utils/prismaErrorHandler'
@@ -54,10 +54,34 @@ router.post('/', validateBody(SubscribeNewsletterSchema), asyncHandler(async (re
   res.status(201).json({ message: 'Successfully subscribed to newsletter', id: subscriber.id })
 }))
 
-// GET /api/newsletter - List all subscribers (admin)
-router.get('/', authenticate, requireAdmin, asyncHandler(async (_req: AuthRequest, res: Response) => {
-  const subscribers = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } })
-  res.json(subscribers)
+// GET /api/newsletter - List all subscribers (admin, paginated)
+router.get('/', authenticate, requireAdmin, validateQuery(PaginationSchema), asyncHandler(async (req: AuthRequest & { validatedQuery?: { page: number; pageSize: number } }, res: Response) => {
+  const { page = 1, pageSize = 20 } = req.validatedQuery || {}
+
+  const where: Record<string, unknown> = {}
+  if (req.query.q) {
+    where.email = { contains: String(req.query.q), mode: 'insensitive' }
+  }
+
+  const [subscribers, total] = await Promise.all([
+    prisma.newsletter.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.newsletter.count({ where }),
+  ])
+
+  res.json({
+    data: subscribers,
+    meta: {
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    },
+  })
 }))
 
 // GET /api/newsletter/unsubscribe - Token-based unsubscribe (public, for email links)

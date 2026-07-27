@@ -9,6 +9,14 @@ interface DogCardProps {
   onToggleFavorite: () => void
 }
 
+function formatAge(months: number): string {
+  if (months < 12) return `${months} ${months === 1 ? 'Month' : 'Months'}`
+  const years = Math.floor(months / 12)
+  const remainingMonths = months % 12
+  if (remainingMonths === 0) return `${years} ${years === 1 ? 'Year' : 'Years'}`
+  return `${years}Y ${remainingMonths}M`
+}
+
 export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavorite }: DogCardProps) {
   return (
     <Card className="group cursor-pointer" onClick={onClick}>
@@ -35,7 +43,7 @@ export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavori
       <div className="p-6" onClick={(e) => e.stopPropagation()}>
         <h3 className="font-heading text-xl text-on-surface mb-1">{dog.name}</h3>
         <p className="text-on-surface-variant text-sm mb-4">
-          {dog.breed} • {dog.age} • {dog.gender}
+          {dog.breed} • {formatAge(dog.ageMonths)} • {dog.gender}
         </p>
         <div className="flex flex-wrap gap-2 mb-6">
           {dog.tags.map((tag) => (

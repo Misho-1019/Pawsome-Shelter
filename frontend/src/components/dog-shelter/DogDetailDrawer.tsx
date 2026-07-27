@@ -1,26 +1,34 @@
 import { Drawer } from '../ui'
 import { useToast } from '../ui/Toast'
+import type { Dog } from '../../types/dog-shelter'
 
 interface DogDetailDrawerProps {
   isOpen: boolean
   onClose: () => void
-  dog: {
-    id: number
-    name: string
-    breed: string
-    age: string
-    gender: string
-    size: string
-    image: string
-    tags: string[]
-    status: string
-  } | null
-  onAdoptClick: (dog: { id: number; name: string; breed: string; age: string; gender: string; size: string; image: string; tags: string[]; status: string }) => void
+  dog: Dog | null
+  onAdoptClick: (dog: Dog) => void
+}
+
+function formatAge(months: number): string {
+  if (months < 12) return `${months} ${months === 1 ? 'Month' : 'Months'}`
+  const years = Math.floor(months / 12)
+  const remainingMonths = months % 12
+  if (remainingMonths === 0) return `${years} ${years === 1 ? 'Year' : 'Years'}`
+  return `${years}Y ${remainingMonths}M`
 }
 
 export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetailDrawerProps) {
   const { addToast } = useToast()
   if (!dog) return null
+
+  const handleShare = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      addToast('Link copied to clipboard!', 'success')
+    } catch {
+      addToast('Failed to copy link', 'error')
+    }
+  }
 
   return (
     <Drawer isOpen={isOpen} onClose={onClose} title={dog.name} size="lg">
@@ -30,6 +38,7 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
           <img
             src={dog.image}
             alt={`${dog.name} - ${dog.breed}`}
+            loading="lazy"
             className="w-full h-full object-cover"
           />
           <div className="absolute top-4 right-4">
@@ -47,21 +56,23 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
         <div className="mb-6">
           <h3 className="font-heading text-2xl text-on-surface mb-2">{dog.name}</h3>
           <p className="text-on-surface-variant text-lg">
-            {dog.breed} • {dog.age} • {dog.gender}
+            {dog.breed} • {formatAge(dog.ageMonths)} • {dog.gender}
           </p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {dog.tags.map((tag) => (
-            <span
-              key={tag}
-              className="bg-surface-container-low text-primary px-3 py-1 rounded-full text-sm font-semibold"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {dog.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {dog.tags.map((tag) => (
+              <span
+                key={tag}
+                className="bg-surface-container-low text-primary px-3 py-1 rounded-full text-sm font-semibold"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Details */}
         <div className="bg-surface-container-low rounded-2xl p-6 mb-6">
@@ -77,7 +88,7 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
             </div>
             <div>
               <p className="text-sm text-on-surface-variant">Age</p>
-              <p className="font-semibold">{dog.age}</p>
+              <p className="font-semibold">{formatAge(dog.ageMonths)}</p>
             </div>
             <div>
               <p className="text-sm text-on-surface-variant">Status</p>
@@ -87,17 +98,24 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
         </div>
 
         {/* About */}
-        <div className="mb-6">
-          <h4 className="font-heading text-lg mb-3">About {dog.name}</h4>
-          <p className="text-on-surface-variant leading-relaxed">
-            {dog.name} is a wonderful {dog.breed.toLowerCase()} looking for a forever home.
-            {dog.tags.includes('Good with kids') && ' Great with children and families.'}
-            {dog.tags.includes('House Trained') && ' Already house trained.'}
-            {dog.tags.includes('Active') && ' Loves to play and go on adventures.'}
-            {dog.tags.includes('Gentle') && ' Has a gentle and calm temperament.'}
-            {` Come meet ${dog.name} and see if you're a perfect match!`}
-          </p>
-        </div>
+        {dog.description && (
+          <div className="mb-6">
+            <h4 className="font-heading text-lg mb-3">About {dog.name}</h4>
+            <p className="text-on-surface-variant leading-relaxed">{dog.description}</p>
+          </div>
+        )}
+
+        {/* Compatibility */}
+        {(dog.goodWithKids || dog.goodWithDogs || dog.goodWithCats) && (
+          <div className="mb-6">
+            <h4 className="font-heading text-lg mb-3">Good With</h4>
+            <div className="flex flex-wrap gap-2">
+              {dog.goodWithKids && <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-sm">Kids</span>}
+              {dog.goodWithDogs && <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-sm">Other Dogs</span>}
+              {dog.goodWithCats && <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-sm">Cats</span>}
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-4">
@@ -109,10 +127,7 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href)
-              addToast('Link copied to clipboard!', 'success')
-            }}
+            onClick={handleShare}
             className="p-4 border-2 border-outline-variant rounded-xl hover:bg-surface-container transition-colors"
             aria-label="Share"
           >

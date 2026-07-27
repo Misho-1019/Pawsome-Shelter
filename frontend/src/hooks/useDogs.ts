@@ -1,18 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
-import { api, type Dog } from '../services/api'
+import { api, type DogListParams } from '../services/api'
+import type { Dog } from '../types/dog-shelter'
 
-export function useDogs(params?: { size?: string; status?: string }) {
+export function useDogs(params?: DogListParams) {
   const [dogs, setDogs] = useState<Dog[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [total, setTotal] = useState(0)
 
   const fetchDogs = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true)
       setError(null)
-      const data = await api.dogs.list(params)
+      const response = await api.dogs.list(params)
       if (!signal?.aborted) {
-        setDogs(data)
+        setDogs(response.data)
+        setTotal(response.meta.total)
       }
     } catch (err) {
       if (!signal?.aborted) {
@@ -23,7 +26,17 @@ export function useDogs(params?: { size?: string; status?: string }) {
         setLoading(false)
       }
     }
-  }, [params?.size, params?.status])
+  }, [
+    params?.size,
+    params?.status,
+    params?.gender,
+    params?.breed,
+    params?.ageMin,
+    params?.ageMax,
+    params?.q,
+    params?.page,
+    params?.pageSize,
+  ])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -31,5 +44,5 @@ export function useDogs(params?: { size?: string; status?: string }) {
     return () => controller.abort()
   }, [fetchDogs])
 
-  return { dogs, loading, error, refetch: () => fetchDogs() }
+  return { dogs, loading, error, total, refetch: () => fetchDogs() }
 }

@@ -14,9 +14,9 @@ export const config = {
   contactPhone: '(555) PAW-SOME',
 }
 
-// Helper to build API URLs
+// Helper to build API URLs (under /api/v1)
 export function apiUrl(path: string): string {
-  return `${config.apiBaseUrl}${path}`
+  return `${config.apiBaseUrl}/api/v1${path}`
 }
 
 // Helper to build frontend URLs

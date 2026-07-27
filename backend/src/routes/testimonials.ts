@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
-import { CreateTestimonialSchema, UpdateTestimonialSchema, validateBody } from '../validation/schemas'
+import { CreateTestimonialSchema, UpdateTestimonialSchema, validateBody, PaginationSchema, validateQuery } from '../validation/schemas'
 import { parseId } from '../utils/parseId'
 import { asyncHandler } from '../utils/asyncHandler'
 import { logger } from '../utils/logger'
@@ -9,10 +9,28 @@ import { handlePrismaError } from '../utils/prismaErrorHandler'
 
 const router = Router()
 
-// GET /api/testimonials - List all testimonials (public)
-router.get('/', asyncHandler(async (_req: Request, res: Response) => {
-  const testimonials = await prisma.testimonial.findMany({ orderBy: { createdAt: 'desc' } })
-  res.json(testimonials)
+// GET /api/testimonials - List all testimonials (public, paginated)
+router.get('/', validateQuery(PaginationSchema), asyncHandler(async (req: Request & { validatedQuery?: { page: number; pageSize: number } }, res: Response) => {
+  const { page = 1, pageSize = 20 } = req.validatedQuery || {}
+
+  const [testimonials, total] = await Promise.all([
+    prisma.testimonial.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.testimonial.count(),
+  ])
+
+  res.json({
+    data: testimonials,
+    meta: {
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    },
+  })
 }))
 
 // GET /api/testimonials/:id - Get testimonial by ID (public)

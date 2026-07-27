@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
 import { sendAdoptionConfirmation } from '../services/email'
-import { CreateAdoptionSchema, UpdateAdoptionSchema, validateBody } from '../validation/schemas'
+import { CreateAdoptionSchema, UpdateAdoptionSchema, validateBody, PaginationSchema, validateQuery } from '../validation/schemas'
 import { parseId } from '../utils/parseId'
 import { asyncHandler } from '../utils/asyncHandler'
 import { logger } from '../utils/logger'
@@ -10,13 +10,36 @@ import { handlePrismaError } from '../utils/prismaErrorHandler'
 
 const router = Router()
 
-// GET /api/adoptions - List all adoptions (admin)
-router.get('/', authenticate, requireAdmin, asyncHandler(async (_req: AuthRequest, res: Response) => {
-  const adoptions = await prisma.adoption.findMany({
-    include: { dog: true },
-    orderBy: { createdAt: 'desc' },
+// GET /api/adoptions - List all adoptions (admin, paginated)
+router.get('/', authenticate, requireAdmin, validateQuery(PaginationSchema), asyncHandler(async (req: AuthRequest & { validatedQuery?: { page: number; pageSize: number } }, res: Response) => {
+  const { page = 1, pageSize = 20 } = req.validatedQuery || {}
+
+  const where: Record<string, unknown> = {}
+  // Allow status filter via query
+  if (req.query.status) {
+    where.status = String(req.query.status)
+  }
+
+  const [adoptions, total] = await Promise.all([
+    prisma.adoption.findMany({
+      where,
+      include: { dog: true },
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+    prisma.adoption.count({ where }),
+  ])
+
+  res.json({
+    data: adoptions,
+    meta: {
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    },
   })
-  res.json(adoptions)
 }))
 
 // GET /api/adoptions/:id - Get adoption by ID (admin)
