@@ -3,7 +3,10 @@ import crypto from 'crypto'
 import { prisma } from '../db/client'
 import { sendNewsletterWelcome } from '../services/email'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
-import { SubscribeNewsletterSchema, validate } from '../validation/schemas'
+import { SubscribeNewsletterSchema, validateBody } from '../validation/schemas'
+import { asyncHandler } from '../utils/asyncHandler'
+import { logger } from '../utils/logger'
+import { handlePrismaError } from '../utils/prismaErrorHandler'
 
 const router = Router()
 
@@ -28,58 +31,51 @@ export function buildUnsubscribeUrl(email: string, baseUrl: string): string {
 }
 
 // POST /api/newsletter - Subscribe to newsletter (public)
-router.post('/', validate(SubscribeNewsletterSchema), async (req: Request, res: Response) => {
-  try {
-    const { email } = req.body
+router.post('/', validateBody(SubscribeNewsletterSchema), asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body
 
-    const existing = await prisma.newsletter.findUnique({ where: { email } })
-    if (existing) {
-      return res.status(409).json({ error: 'Email already subscribed' })
-    }
-
-    const subscriber = await prisma.newsletter.create({ data: { email } })
-
-    // Send welcome email (don't fail if email fails)
-    try {
-      await sendNewsletterWelcome(email)
-    } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError)
-    }
-
-    res.status(201).json({ message: 'Successfully subscribed to newsletter', id: subscriber.id })
-  } catch (error) {
-    console.error('Newsletter subscribe error:', error)
-    res.status(500).json({ error: 'Failed to subscribe to newsletter' })
+  const existing = await prisma.newsletter.findUnique({ where: { email } })
+  if (existing) {
+    return res.status(409).json({ error: 'Email already subscribed' })
   }
-})
+
+  const subscriber = await prisma.newsletter.create({ data: { email } })
+
+  // Send welcome email (don't fail if email fails)
+  try {
+    await sendNewsletterWelcome(email)
+  } catch (emailError) {
+    logger.error('Failed to send welcome email', {
+      error: (emailError as Error).message,
+      email,
+    }, req.requestId)
+  }
+
+  res.status(201).json({ message: 'Successfully subscribed to newsletter', id: subscriber.id })
+}))
 
 // GET /api/newsletter - List all subscribers (admin)
-router.get('/', authenticate, requireAdmin, async (_req: AuthRequest, res: Response) => {
-  try {
-    const subscribers = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } })
-    res.json(subscribers)
-  } catch (error) {
-    console.error('Newsletter list error:', error)
-    res.status(500).json({ error: 'Failed to fetch subscribers' })
-  }
-})
+router.get('/', authenticate, requireAdmin, asyncHandler(async (_req: AuthRequest, res: Response) => {
+  const subscribers = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } })
+  res.json(subscribers)
+}))
 
 // GET /api/newsletter/unsubscribe - Token-based unsubscribe (public, for email links)
 // Must come BEFORE the /:email route so Express matches it first
-router.get('/unsubscribe', async (req: Request, res: Response) => {
+router.get('/unsubscribe', asyncHandler(async (req: Request, res: Response) => {
+  const email = String(req.query.email || '')
+  const token = String(req.query.token || '')
+
+  if (!email || !token) {
+    return res.status(400).json({ error: 'Missing email or token' })
+  }
+
+  const expectedToken = generateUnsubscribeToken(email)
+  if (token !== expectedToken) {
+    return res.status(403).json({ error: 'Invalid unsubscribe token' })
+  }
+
   try {
-    const email = String(req.query.email || '')
-    const token = String(req.query.token || '')
-
-    if (!email || !token) {
-      return res.status(400).json({ error: 'Missing email or token' })
-    }
-
-    const expectedToken = generateUnsubscribeToken(email)
-    if (token !== expectedToken) {
-      return res.status(403).json({ error: 'Invalid unsubscribe token' })
-    }
-
     const subscriber = await prisma.newsletter.findUnique({ where: { email } })
     if (!subscriber) {
       return res.status(404).json({ error: 'Email not found' })
@@ -88,25 +84,26 @@ router.get('/unsubscribe', async (req: Request, res: Response) => {
     await prisma.newsletter.delete({ where: { email } })
     res.json({ message: 'Successfully unsubscribed' })
   } catch (error) {
-    console.error('Newsletter unsubscribe error:', error)
+    if (handlePrismaError(error, res, 'Unsubscribe', req.requestId)) return
+    logger.error('Unsubscribe failed', { error: (error as Error).message, email }, req.requestId)
     res.status(500).json({ error: 'Failed to unsubscribe' })
   }
-})
+}))
 
 // POST /api/newsletter/unsubscribe - Token-based unsubscribe via POST (public)
-router.post('/unsubscribe', async (req: Request, res: Response) => {
+router.post('/unsubscribe', asyncHandler(async (req: Request, res: Response) => {
+  const { email, token } = req.body
+
+  if (!email || !token) {
+    return res.status(400).json({ error: 'Missing email or token' })
+  }
+
+  const expectedToken = generateUnsubscribeToken(email)
+  if (token !== expectedToken) {
+    return res.status(403).json({ error: 'Invalid unsubscribe token' })
+  }
+
   try {
-    const { email, token } = req.body
-
-    if (!email || !token) {
-      return res.status(400).json({ error: 'Missing email or token' })
-    }
-
-    const expectedToken = generateUnsubscribeToken(email)
-    if (token !== expectedToken) {
-      return res.status(403).json({ error: 'Invalid unsubscribe token' })
-    }
-
     const subscriber = await prisma.newsletter.findUnique({ where: { email } })
     if (!subscriber) {
       return res.status(404).json({ error: 'Email not found' })
@@ -115,19 +112,20 @@ router.post('/unsubscribe', async (req: Request, res: Response) => {
     await prisma.newsletter.delete({ where: { email } })
     res.json({ message: 'Successfully unsubscribed' })
   } catch (error) {
-    console.error('Newsletter unsubscribe error:', error)
+    if (handlePrismaError(error, res, 'Unsubscribe', req.requestId)) return
+    logger.error('Unsubscribe failed', { error: (error as Error).message, email }, req.requestId)
     res.status(500).json({ error: 'Failed to unsubscribe' })
   }
-})
+}))
 
 // DELETE /api/newsletter/:email - Admin-only direct delete
-router.delete('/:email', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
-  try {
-    const emailParam = Array.isArray(req.params.email) ? req.params.email[0] : req.params.email
-    if (!emailParam) {
-      return res.status(400).json({ error: 'Email required' })
-    }
+router.delete('/:email', authenticate, requireAdmin, asyncHandler(async (req: AuthRequest, res: Response) => {
+  const emailParam = Array.isArray(req.params.email) ? req.params.email[0] : req.params.email
+  if (!emailParam) {
+    return res.status(400).json({ error: 'Email required' })
+  }
 
+  try {
     const subscriber = await prisma.newsletter.findUnique({ where: { email: emailParam } })
     if (!subscriber) {
       return res.status(404).json({ error: 'Email not found' })
@@ -136,9 +134,10 @@ router.delete('/:email', authenticate, requireAdmin, async (req: AuthRequest, re
     await prisma.newsletter.delete({ where: { email: emailParam } })
     res.json({ message: 'Subscriber deleted' })
   } catch (error) {
-    console.error('Newsletter delete error:', error)
+    if (handlePrismaError(error, res, 'Delete subscriber', req.requestId)) return
+    logger.error('Delete subscriber failed', { error: (error as Error).message, email: emailParam }, req.requestId)
     res.status(500).json({ error: 'Failed to delete subscriber' })
   }
-})
+}))
 
 export default router

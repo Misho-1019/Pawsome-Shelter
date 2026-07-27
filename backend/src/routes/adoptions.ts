@@ -2,63 +2,92 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
 import { sendAdoptionConfirmation } from '../services/email'
-import { CreateAdoptionSchema, UpdateAdoptionSchema, validate } from '../validation/schemas'
+import { CreateAdoptionSchema, UpdateAdoptionSchema, validateBody } from '../validation/schemas'
+import { parseId } from '../utils/parseId'
+import { asyncHandler } from '../utils/asyncHandler'
+import { logger } from '../utils/logger'
+import { handlePrismaError } from '../utils/prismaErrorHandler'
 
 const router = Router()
 
-function parseId(id: string | string[]): number | null {
-  const value = Array.isArray(id) ? id[0] : id
-  const parsed = parseInt(value)
-  return isNaN(parsed) ? null : parsed
-}
-
 // GET /api/adoptions - List all adoptions (admin)
-router.get('/', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
-  try {
-    const adoptions = await prisma.adoption.findMany({
-      include: { dog: true },
-      orderBy: { createdAt: 'desc' }
-    })
-    res.json(adoptions)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch adoptions' })
-  }
-})
+router.get('/', authenticate, requireAdmin, asyncHandler(async (_req: AuthRequest, res: Response) => {
+  const adoptions = await prisma.adoption.findMany({
+    include: { dog: true },
+    orderBy: { createdAt: 'desc' },
+  })
+  res.json(adoptions)
+}))
+
+// GET /api/adoptions/:id - Get adoption by ID (admin)
+router.get('/:id', authenticate, requireAdmin, asyncHandler(async (req: AuthRequest, res: Response) => {
+  const id = parseId(req.params.id)
+  if (id === null) return res.status(400).json({ error: 'Invalid ID' })
+
+  const adoption = await prisma.adoption.findUnique({
+    where: { id },
+    include: { dog: true },
+  })
+  if (!adoption) return res.status(404).json({ error: 'Adoption not found' })
+  res.json(adoption)
+}))
 
 // POST /api/adoptions - Submit adoption inquiry (public)
-router.post('/', validate(CreateAdoptionSchema), async (req: Request, res: Response) => {
-  try {
-    const { name, email, phone, message, dogId } = req.body
-    const adoption = await prisma.adoption.create({
-      data: { name, email, phone, message, dogId },
-      include: { dog: true }
-    })
+router.post('/', validateBody(CreateAdoptionSchema), asyncHandler(async (req: Request, res: Response) => {
+  const { name, email, phone, message, dogId, householdType, hasYard, otherPets } = req.body
 
-    // Send confirmation email (don't fail if email fails)
-    if (email && name && adoption.dog) {
-      try {
-        await sendAdoptionConfirmation(email, name, adoption.dog.name)
-      } catch (emailError) {
-        console.error('Failed to send adoption confirmation email:', emailError)
-      }
+  const adoption = await prisma.adoption.create({
+    data: { name, email, phone, message, dogId, householdType, hasYard, otherPets },
+    include: { dog: true },
+  })
+
+  // Send confirmation email (don't fail if email fails)
+  if (adoption.dog) {
+    try {
+      await sendAdoptionConfirmation(email, name, adoption.dog.name)
+    } catch (emailError) {
+      logger.error('Failed to send adoption confirmation email', {
+        error: (emailError as Error).message,
+        adoptionId: adoption.id,
+      }, req.requestId)
     }
-
-    res.status(201).json(adoption)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to submit adoption inquiry' })
   }
-})
 
-// PUT /api/adoptions/:id - Update adoption status (admin)
-router.put('/:id', authenticate, requireAdmin, validate(UpdateAdoptionSchema), async (req: AuthRequest, res: Response) => {
+  res.status(201).json(adoption)
+}))
+
+// PUT /api/adoptions/:id - Update adoption (admin)
+router.put('/:id', authenticate, requireAdmin, validateBody(UpdateAdoptionSchema), asyncHandler(async (req: AuthRequest, res: Response) => {
+  const id = parseId(req.params.id)
+  if (id === null) return res.status(400).json({ error: 'Invalid ID' })
+
   try {
-    const id = parseId(req.params.id)
-    if (id === null) return res.status(400).json({ error: 'Invalid ID' })
-    const adoption = await prisma.adoption.update({ where: { id }, data: req.body })
+    const adoption = await prisma.adoption.update({
+      where: { id },
+      data: req.body,
+      include: { dog: true },
+    })
     res.json(adoption)
   } catch (error) {
+    if (handlePrismaError(error, res, 'Update adoption', req.requestId)) return
+    logger.error('Update adoption failed', { error: (error as Error).message, id }, req.requestId)
     res.status(500).json({ error: 'Failed to update adoption' })
   }
-})
+}))
+
+// DELETE /api/adoptions/:id - Delete adoption (admin)
+router.delete('/:id', authenticate, requireAdmin, asyncHandler(async (req: AuthRequest, res: Response) => {
+  const id = parseId(req.params.id)
+  if (id === null) return res.status(400).json({ error: 'Invalid ID' })
+
+  try {
+    await prisma.adoption.delete({ where: { id } })
+    res.json({ message: 'Adoption deleted successfully' })
+  } catch (error) {
+    if (handlePrismaError(error, res, 'Delete adoption', req.requestId)) return
+    logger.error('Delete adoption failed', { error: (error as Error).message, id }, req.requestId)
+    res.status(500).json({ error: 'Failed to delete adoption' })
+  }
+}))
 
 export default router

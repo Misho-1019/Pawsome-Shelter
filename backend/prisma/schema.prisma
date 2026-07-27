@@ -7,21 +7,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  Male
+  Female
+}
+
+enum Size {
+  Small
+  Medium
+  Large
+}
+
+enum DogStatus {
+  Available
+  Pending
+  Adopted
+}
+
+enum EnergyLevel {
+  Low
+  Medium
+  High
+}
+
+enum AdoptionStatus {
+  Pending
+  InReview
+  MeetGreet
+  Approved
+  Rejected
+  Completed
+}
+
+enum VolunteerStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum UserRole {
+  admin
+  staff
+}
+
 model Dog {
-  id        Int      @id @default(autoincrement())
-  name      String
-  breed     String
-  age       String
-  gender    String
-  size      String
-  image     String
-  tags      String[]
-  status    String   @default("Available")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int       @id @default(autoincrement())
+  name         String
+  breed        String
+  ageMonths    Int       // Age in months (replaces free-form string)
+  gender       Gender
+  size         Size
+  status       DogStatus @default(Available)
+  image        String
+  tags         String[]  @default([])
+  description  String?   // Personality bio
+  isNeutered   Boolean   @default(false)
+  isVaccinated Boolean   @default(false)
+  goodWithKids Boolean   @default(false)
+  goodWithDogs Boolean   @default(false)
+  goodWithCats Boolean   @default(false)
+  energyLevel  EnergyLevel?
+  arrivalDate  DateTime?
+  adoptionFee  Int?      // In cents (e.g. 5000 = $50.00)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   adoptions Adoption[]
 
+  @@index([status, size])
+  @@index([breed])
   @@index([status])
   @@index([size])
 }
@@ -34,22 +88,27 @@ model Testimonial {
   image     String
   rating    Int      @default(5)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Adoption {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String?
-  message   String?
-  dogId     Int?
-  dog       Dog?     @relation(fields: [dogId], references: [id])
-  status    String   @default("Pending")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int             @id @default(autoincrement())
+  name          String
+  email         String
+  phone         String?
+  message       String?
+  dogId         Int?
+  dog           Dog?            @relation(fields: [dogId], references: [id], onDelete: SetNull)
+  status        AdoptionStatus  @default(Pending)
+  householdType String?         // apartment, house, etc.
+  hasYard       Boolean?
+  otherPets     String?         // description of other pets
+  notes         String?         // Internal staff notes
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
-  @@index([dogId])
-  @@index([status])
+  @@index([dogId, status])
+  @@index([status, createdAt])
   @@index([createdAt])
 }
 
@@ -61,16 +120,19 @@ model Content {
 }
 
 model Volunteer {
-  id           Int      @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   name         String
   email        String
   phone        String?
   availability String
   experience   String?
   message      String?
-  status       String   @default("Pending")
-  createdAt    DateTime @default(now())
+  status       VolunteerStatus @default(Pending)
+  notes        String?         // Internal staff notes
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
+  @@index([status, createdAt])
   @@index([status])
   @@index([createdAt])
 }
@@ -86,6 +148,7 @@ model User {
   email     String   @unique
   password  String
   name      String
-  role      String   @default("admin")
+  role      UserRole @default(admin)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
