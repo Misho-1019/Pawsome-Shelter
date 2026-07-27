@@ -1,48 +1,20 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { api, type DogListParams } from '../services/api'
-import type { Dog } from '../types/dog-shelter'
+
+const STALE_TIME = 1000 * 60 * 5 // 5 minutes
 
 export function useDogs(params?: DogListParams) {
-  const [dogs, setDogs] = useState<Dog[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [total, setTotal] = useState(0)
+  const query = useQuery({
+    queryKey: ['dogs', params],
+    queryFn: () => api.dogs.list(params),
+    staleTime: STALE_TIME,
+  })
 
-  const fetchDogs = useCallback(async (signal?: AbortSignal) => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await api.dogs.list(params)
-      if (!signal?.aborted) {
-        setDogs(response.data)
-        setTotal(response.meta.total)
-      }
-    } catch (err) {
-      if (!signal?.aborted) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch dogs')
-      }
-    } finally {
-      if (!signal?.aborted) {
-        setLoading(false)
-      }
-    }
-  }, [
-    params?.size,
-    params?.status,
-    params?.gender,
-    params?.breed,
-    params?.ageMin,
-    params?.ageMax,
-    params?.q,
-    params?.page,
-    params?.pageSize,
-  ])
-
-  useEffect(() => {
-    const controller = new AbortController()
-    fetchDogs(controller.signal)
-    return () => controller.abort()
-  }, [fetchDogs])
-
-  return { dogs, loading, error, total, refetch: () => fetchDogs() }
+  return {
+    dogs: query.data?.data ?? [],
+    total: query.data?.meta.total ?? 0,
+    loading: query.isLoading,
+    error: query.error ? (query.error instanceof Error ? query.error.message : 'Failed to fetch dogs') : null,
+    refetch: query.refetch,
+  }
 }

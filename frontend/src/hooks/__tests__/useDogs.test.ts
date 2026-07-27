@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useDogs } from '../useDogs'
 import { api } from '../../services/api'
 import type { Dog, PaginatedResponse } from '../../types/dog-shelter'
+import { createElement, type ReactNode } from 'react'
 
-// Mock the API module
 vi.mock('../../services/api', () => ({
   api: {
     dogs: {
@@ -32,32 +33,37 @@ const mockDog: Dog = {
   updatedAt: '2026-01-01T00:00:00Z',
 }
 
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return ({ children }: { children: ReactNode }) =>
+    createElement(QueryClientProvider, { client: queryClient }, children)
+}
+
 describe('useDogs', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('should return loading state initially', () => {
-    vi.mocked(api.dogs.list).mockResolvedValue({
-      data: [],
-      meta: { total: 0, page: 1, pageSize: 20, totalPages: 0 },
-    })
+  it('returns loading state initially', () => {
+    vi.mocked(api.dogs.list).mockReturnValue(new Promise(() => {})) // never resolves
 
-    const { result } = renderHook(() => useDogs())
+    const { result } = renderHook(() => useDogs(), { wrapper: createWrapper() })
 
     expect(result.current.loading).toBe(true)
     expect(result.current.dogs).toEqual([])
     expect(result.current.error).toBeNull()
   })
 
-  it('should return dogs after loading', async () => {
+  it('returns dogs after loading', async () => {
     const mockResponse: PaginatedResponse<Dog> = {
       data: [mockDog],
       meta: { total: 1, page: 1, pageSize: 20, totalPages: 1 },
     }
     vi.mocked(api.dogs.list).mockResolvedValue(mockResponse)
 
-    const { result } = renderHook(() => useDogs())
+    const { result } = renderHook(() => useDogs(), { wrapper: createWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
@@ -68,10 +74,10 @@ describe('useDogs', () => {
     expect(result.current.error).toBeNull()
   })
 
-  it('should handle errors', async () => {
+  it('handles errors', async () => {
     vi.mocked(api.dogs.list).mockRejectedValue(new Error('Network error'))
 
-    const { result } = renderHook(() => useDogs())
+    const { result } = renderHook(() => useDogs(), { wrapper: createWrapper() })
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false)
