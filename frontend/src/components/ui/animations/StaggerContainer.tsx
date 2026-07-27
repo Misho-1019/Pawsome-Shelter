@@ -8,6 +8,10 @@ interface StaggerContainerProps {
   once?: boolean
 }
 
+const prefersReducedMotion = typeof window !== 'undefined'
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false
+
 export function StaggerContainer({
   children,
   staggerDelay = 0.1,
@@ -16,10 +20,6 @@ export function StaggerContainer({
 }: StaggerContainerProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
-
-  const prefersReducedMotion = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false
 
   return (
     <motion.div

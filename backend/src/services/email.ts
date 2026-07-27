@@ -6,6 +6,15 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 const EMAIL_FROM = process.env.EMAIL_FROM || 'Pawsome Shelter <onboarding@resend.dev>'
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 // Load hero image as base64
 let HERO_IMAGE_BASE64 = ''
 try {
@@ -130,7 +139,7 @@ export async function sendNewsletterWelcome(email: string) {
     </table>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 32px;">
       <tr><td align="center">
-        <a href="http://localhost:5173/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Browse Our Dogs →</a>
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Browse Our Dogs →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>
@@ -148,9 +157,9 @@ export async function sendNewsletterWelcome(email: string) {
 export async function sendAdoptionConfirmation(email: string, name: string, dogName: string) {
   const content = `
     <h1 style="color: #231915; font-size: 28px; margin: 0 0 20px 0;">🐕 Adoption Inquiry Received!</h1>
-    <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${name},</p>
+    <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${escapeHtml(name)},</p>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
-      Thank you for your interest in adopting <strong>${dogName}</strong>! We're excited about your inquiry.
+      Thank you for your interest in adopting <strong>${escapeHtml(dogName)}</strong>! We're excited about your inquiry.
     </p>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
       We've received your application and our team will review it within 24-48 hours.
@@ -165,7 +174,7 @@ export async function sendAdoptionConfirmation(email: string, name: string, dogN
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
       <tr><td align="center">
-        <a href="http://localhost:5173/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">View Dog Details →</a>
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#dogs" style="background-color: #E97A3D; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">View Dog Details →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>
@@ -183,7 +192,7 @@ export async function sendAdoptionConfirmation(email: string, name: string, dogN
 export async function sendVolunteerConfirmation(email: string, name: string) {
   const content = `
     <h1 style="color: #231915; font-size: 28px; margin: 0 0 20px 0;">🙋 Volunteer Application Received!</h1>
-    <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${name},</p>
+    <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">Hi ${escapeHtml(name)},</p>
     <p style="color: #564239; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
       Thank you for your interest in volunteering at Pawsome Shelter! We truly appreciate your willingness to help our furry friends.
     </p>
@@ -200,7 +209,7 @@ export async function sendVolunteerConfirmation(email: string, name: string) {
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
       <tr><td align="center">
-        <a href="http://localhost:5173/#volunteer" style="background-color: #2A9D8F; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Learn More →</a>
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}/#volunteer" style="background-color: #2A9D8F; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Learn More →</a>
       </td></tr>
     </table>
     <p style="color: #564239; font-size: 14px; line-height: 1.6; margin-top: 32px;">Questions? Reply to this email or call us at <strong>(555) PAW-SOME</strong>.</p>

@@ -16,7 +16,7 @@ export function ContactSection() {
                     <span className="material-symbols-outlined">location_on</span>
                   </div>
                   <div>
-                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Address</h4>
+                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest">Address</h4>
                     <p className="font-body text-lg">
                       123 Rescue Lane, Houndview Heights<br />Paw City, PC 56789
                     </p>
@@ -27,7 +27,7 @@ export function ContactSection() {
                     <span className="material-symbols-outlined">call</span>
                   </div>
                   <div>
-                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Call Us</h4>
+                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest">Call Us</h4>
                     <a href="tel:+15557297663" className="font-body text-lg hover:text-primary transition-colors inline-flex items-center gap-2">
                       (555) PAW-SOME • (555) 729-7663
                     </a>
@@ -38,7 +38,7 @@ export function ContactSection() {
                     <span className="material-symbols-outlined">schedule</span>
                   </div>
                   <div>
-                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Visiting Hours</h4>
+                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest">Visiting Hours</h4>
                     <p className="font-body text-lg">
                       Mon - Fri: 10 AM - 6 PM<br />Sat - Sun: 11 AM - 4 PM
                     </p>
@@ -49,7 +49,7 @@ export function ContactSection() {
                     <span className="material-symbols-outlined">mail</span>
                   </div>
                   <div>
-                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest opacity-50">Email</h4>
+                    <h4 className="font-heading text-sm mb-1 uppercase tracking-widest">Email</h4>
                     <a href="mailto:info@pawsomeshelter.com" className="font-body text-lg hover:text-primary transition-colors">
                       info@pawsomeshelter.com
                     </a>

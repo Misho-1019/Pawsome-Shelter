@@ -1,27 +1,36 @@
 import { useState, useEffect } from 'react'
-import { api, type Testimonial } from '../services/api'
+import { api } from '../services/api'
+import type { Testimonial } from '../types/dog-shelter'
 
 export function useTestimonials() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchTestimonials = async () => {
+  const fetchTestimonials = async (signal?: AbortSignal) => {
     try {
       setLoading(true)
       setError(null)
       const data = await api.testimonials.list()
-      setTestimonials(data)
+      if (!signal?.aborted) {
+        setTestimonials(data)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch testimonials')
+      if (!signal?.aborted) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch testimonials')
+      }
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) {
+        setLoading(false)
+      }
     }
   }
 
   useEffect(() => {
-    fetchTestimonials()
+    const controller = new AbortController()
+    fetchTestimonials(controller.signal)
+    return () => controller.abort()
   }, [])
 
-  return { testimonials, loading, error, refetch: fetchTestimonials }
+  return { testimonials, loading, error, refetch: () => fetchTestimonials() }
 }

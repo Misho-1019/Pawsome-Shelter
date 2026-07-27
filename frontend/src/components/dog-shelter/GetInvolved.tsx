@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { VolunteerModal } from './VolunteerModal'
 import { SlideIn } from '../ui/animations'
+import { useToast } from '../ui/Toast'
 
 export function GetInvolved() {
   const [donationAmount, setDonationAmount] = useState(50)
   const [customAmount, setCustomAmount] = useState('')
   const [isCustom, setIsCustom] = useState(false)
   const [isVolunteerOpen, setIsVolunteerOpen] = useState(false)
+  const { addToast } = useToast()
 
   const handleAmountClick = (amount: number) => {
     setDonationAmount(amount)
@@ -30,7 +32,7 @@ export function GetInvolved() {
   const handleDonate = () => {
     const amount = isCustom ? parseInt(customAmount) : donationAmount
     if (amount >= 1) {
-      alert(`Thank you for your $${amount} donation! (This is a demo - no actual payment will be processed)`)
+      addToast(`Thank you for your $${amount} donation! (This is a demo - no actual payment will be processed)`, 'success')
     }
   }
 
@@ -115,6 +117,7 @@ export function GetInvolved() {
                         value={customAmount}
                         onChange={handleCustomChange}
                         placeholder="Enter amount"
+                        aria-label="Custom donation amount in dollars"
                         className="w-full bg-white/10 border-2 border-white/20 rounded-xl py-4 pl-8 pr-4 font-body text-lg text-white placeholder-white/40 focus:outline-none focus:border-primary-container transition-colors"
                         autoFocus
                       />

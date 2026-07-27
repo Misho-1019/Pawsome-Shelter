@@ -18,6 +18,10 @@ const directionVariants = {
   none: { hidden: { opacity: 0 }, visible: { opacity: 1 } },
 }
 
+const prefersReducedMotion = typeof window !== 'undefined'
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false
+
 export function FadeIn({
   children,
   delay = 0,
@@ -28,11 +32,6 @@ export function FadeIn({
 }: FadeInProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
-
-  // Respect prefers-reduced-motion
-  const prefersReducedMotion = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false
 
   return (
     <motion.div

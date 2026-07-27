@@ -7,7 +7,9 @@ export interface Dog {
   size: 'Small' | 'Medium' | 'Large'
   image: string
   tags: string[]
-  status: 'Available' | 'Pending'
+  status: 'Available' | 'Pending' | 'Adopted'
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Testimonial {
@@ -17,6 +19,7 @@ export interface Testimonial {
   quote: string
   image: string
   rating: number
+  createdAt: string
 }
 
 export interface AdoptionStep {

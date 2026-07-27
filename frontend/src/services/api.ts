@@ -1,4 +1,5 @@
 import { apiUrl } from '../config'
+import type { Dog, Testimonial } from '../types/dog-shelter'
 
 const API_BASE = apiUrl('/api')
 
@@ -19,34 +20,9 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json()
 }
 
-// Add auth token if available
 function authHeaders(): Record<string, string> {
   const token = localStorage.getItem('token')
   return token ? { Authorization: `Bearer ${token}` } : {}
-}
-
-export interface Dog {
-  id: number
-  name: string
-  breed: string
-  age: string
-  gender: string
-  size: string
-  image: string
-  tags: string[]
-  status: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Testimonial {
-  id: number
-  name: string
-  dogName: string
-  quote: string
-  image: string
-  rating: number
-  createdAt: string
 }
 
 export interface Adoption {
@@ -56,7 +32,27 @@ export interface Adoption {
   phone?: string
   message?: string
   dogId?: number
+  dog?: Dog
   status: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Volunteer {
+  id: number
+  name: string
+  email: string
+  phone?: string
+  availability: string
+  experience?: string
+  message?: string
+  status: string
+  createdAt: string
+}
+
+export interface Newsletter {
+  id: number
+  email: string
   createdAt: string
 }
 
@@ -70,6 +66,12 @@ export interface User {
 export interface LoginResponse {
   token: string
   user: User
+}
+
+export interface ContentSection {
+  id: number
+  section: string
+  data: Record<string, unknown>
 }
 
 export const api = {
@@ -137,6 +139,40 @@ export const api = {
       }),
   },
 
+  volunteers: {
+    list: () =>
+      request<Volunteer[]>('/volunteers', {
+        headers: authHeaders(),
+      }),
+    create: (data: { name: string; email: string; phone?: string; availability: string; experience?: string; message?: string }) =>
+      request<Volunteer>('/volunteers', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    update: (id: number, data: { status: string }) =>
+      request<Volunteer>(`/volunteers/${id}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify(data),
+      }),
+  },
+
+  newsletter: {
+    subscribe: (email: string) =>
+      request<{ message: string; id: number }>('/newsletter', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+    list: () =>
+      request<Newsletter[]>('/newsletter', {
+        headers: authHeaders(),
+      }),
+    unsubscribe: (email: string) =>
+      request<{ message: string }>(`/newsletter/${encodeURIComponent(email)}`, {
+        method: 'DELETE',
+      }),
+  },
+
   auth: {
     login: (email: string, password: string) =>
       request<LoginResponse>('/auth/login', {
@@ -150,10 +186,10 @@ export const api = {
   },
 
   content: {
-    list: () => request<{ id: number; section: string; data: any }[]>('/content'),
-    get: (section: string) => request<{ id: number; section: string; data: any }>(`/content/${section}`),
-    update: (section: string, data: any) =>
-      request<{ id: number; section: string; data: any }>(`/content/${section}`, {
+    list: () => request<ContentSection[]>('/content'),
+    get: (section: string) => request<ContentSection>(`/content/${section}`),
+    update: (section: string, data: Record<string, unknown>) =>
+      request<ContentSection>(`/content/${section}`, {
         method: 'PUT',
         headers: authHeaders(),
         body: JSON.stringify({ data }),

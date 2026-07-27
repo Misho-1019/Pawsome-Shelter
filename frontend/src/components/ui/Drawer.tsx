@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useState, useRef } from 'react'
 
 interface DrawerProps {
   isOpen: boolean
@@ -14,34 +14,67 @@ const sizeClasses = {
   lg: 'w-full md:w-[600px]',
 }
 
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+  )
+}
+
 export function Drawer({ isOpen, onClose, title, children, size = 'md' }: DrawerProps) {
   const [shouldRender, setShouldRender] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose()
+    if (e.key === 'Escape') {
+      onClose()
+      return
+    }
+    if (e.key === 'Tab' && panelRef.current) {
+      const focusable = getFocusableElements(panelRef.current)
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
+    }
   }, [onClose])
 
   useEffect(() => {
     if (isOpen) {
-      // Opening sequence
+      previousFocusRef.current = document.activeElement as HTMLElement
       setShouldRender(true)
       document.addEventListener('keydown', handleKeyDown)
       document.body.style.overflow = 'hidden'
 
-      // Double requestAnimationFrame ensures initial state is painted
-      // before starting the animation (smooth opening)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setIsAnimating(true)
+          if (panelRef.current) {
+            const focusable = getFocusableElements(panelRef.current)
+            if (focusable.length > 0) focusable[0].focus()
+          }
         })
       })
     } else {
-      // Closing sequence
       setIsAnimating(false)
       document.body.style.overflow = 'unset'
+      if (previousFocusRef.current) {
+        previousFocusRef.current.focus()
+      }
 
-      // Unmount after exit animation completes (400ms)
       const timer = setTimeout(() => setShouldRender(false), 400)
       return () => clearTimeout(timer)
     }
@@ -50,13 +83,12 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
       document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen, handleKeyDown])  // ✅ Only depends on isOpen
+  }, [isOpen, handleKeyDown])
 
   if (!shouldRender) return null
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 transition-opacity duration-400"
         style={{ opacity: isAnimating ? 1 : 0 }}
@@ -64,8 +96,8 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
         aria-hidden="true"
       />
 
-      {/* Drawer Panel */}
       <div
+        ref={panelRef}
         className={`relative ${sizeClasses[size]} h-full bg-white shadow-2xl transition-transform duration-500 ease-out`}
         style={{
           transform: isAnimating ? 'translateX(0)' : 'translateX(100%)',
@@ -73,8 +105,8 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
         role="dialog"
         aria-modal="true"
         aria-label={title}
+        tabIndex={-1}
       >
-        {/* Header */}
         <div className="sticky top-0 z-10 bg-white border-b border-outline-variant px-6 py-4 flex items-center justify-between">
           <h2 className="font-heading text-xl font-semibold text-on-surface">
             {title}
@@ -88,7 +120,6 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
           </button>
         </div>
 
-        {/* Content */}
         <div className="h-[calc(100vh-80px)] overflow-y-auto">
           {children}
         </div>

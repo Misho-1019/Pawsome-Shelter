@@ -7,7 +7,7 @@ async function main() {
   console.log('Seeding database...')
 
   // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10)
+  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin123', 10)
   await prisma.user.upsert({
     where: { email: 'admin@pawsomeshelter.com' },
     update: {},
@@ -84,11 +84,11 @@ async function main() {
     }
   ]
 
-  for (const dog of dogs) {
+  for (let i = 0; i < dogs.length; i++) {
     await prisma.dog.upsert({
-      where: { id: dogs.indexOf(dog) + 1 },
-      update: dog,
-      create: { id: dogs.indexOf(dog) + 1, ...dog }
+      where: { id: i + 1 },
+      update: dogs[i],
+      create: { id: i + 1, ...dogs[i] }
     })
   }
   console.log('Dogs created')
@@ -118,8 +118,14 @@ async function main() {
     }
   ]
 
-  for (const testimonial of testimonials) {
-    await prisma.testimonial.create({ data: testimonial })
+  for (let i = 0; i < testimonials.length; i++) {
+    const t = testimonials[i]
+    const existing = await prisma.testimonial.findFirst({ where: { dogName: t.dogName } })
+    if (existing) {
+      await prisma.testimonial.update({ where: { id: existing.id }, data: t })
+    } else {
+      await prisma.testimonial.create({ data: t })
+    }
   }
   console.log('Testimonials created')
 

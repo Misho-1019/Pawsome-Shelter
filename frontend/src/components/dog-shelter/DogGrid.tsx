@@ -5,6 +5,7 @@ import { DogCard } from './DogCard'
 import { DogDetailDrawer } from './DogDetailDrawer'
 import { AdoptionModal } from './AdoptionModal'
 import { FadeIn, StaggerContainer, StaggerItem } from '../ui/animations'
+import type { Dog } from '../../types/dog-shelter'
 
 const filters = ['All', 'Small', 'Medium', 'Large', 'Puppies', 'Seniors', 'Favorites']
 
@@ -12,7 +13,7 @@ export function DogGrid() {
   const [activeFilter, setActiveFilter] = useState('All')
   const { dogs, loading, error } = useDogs()
   const { isFavorite, toggleFavorite, favoritesCount } = useFavorites()
-  const [selectedDog, setSelectedDog] = useState<any>(null)
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null)
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const [isAdoptOpen, setIsAdoptOpen] = useState(false)
 
@@ -24,12 +25,12 @@ export function DogGrid() {
     return dog.size === activeFilter
   })
 
-  const handleDogClick = (dog: any) => {
+  const handleDogClick = (dog: Dog) => {
     setSelectedDog(dog)
     setIsDetailOpen(true)
   }
 
-  const handleAdoptClick = (dog: any) => {
+  const handleAdoptClick = (dog: Dog) => {
     setSelectedDog(dog)
     setIsDetailOpen(false)
     setIsAdoptOpen(true)
@@ -68,6 +69,7 @@ export function DogGrid() {
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
+                  aria-pressed={activeFilter === filter}
                   className={`px-5 py-2 rounded-full font-body text-sm font-semibold transition-colors ${
                     activeFilter === filter
                       ? 'bg-primary-container text-on-primary'
@@ -89,7 +91,7 @@ export function DogGrid() {
         </FadeIn>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter" aria-busy={loading} aria-live="polite">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-premium animate-pulse">
                 <div className="h-72 bg-gray-200" />

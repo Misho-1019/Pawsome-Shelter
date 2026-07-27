@@ -21,6 +21,9 @@ model Dog {
   updatedAt DateTime @updatedAt
 
   adoptions Adoption[]
+
+  @@index([status])
+  @@index([size])
 }
 
 model Testimonial {
@@ -44,6 +47,10 @@ model Adoption {
   status    String   @default("Pending")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([dogId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Content {
@@ -63,6 +70,9 @@ model Volunteer {
   message      String?
   status       String   @default("Pending")
   createdAt    DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Newsletter {

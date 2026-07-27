@@ -63,6 +63,8 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
             >
               <button
                 onClick={() => toggleFaq(index)}
+                aria-expanded={expandedIndex === index}
+                aria-controls={`faq-answer-${index}`}
                 className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-surface-container-low transition-colors"
               >
                 <span className="font-heading font-semibold text-on-surface pr-4">
@@ -77,6 +79,9 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
                 </span>
               </button>
               <div
+                id={`faq-answer-${index}`}
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
                 className={`overflow-hidden transition-all duration-300 ${
                   expandedIndex === index ? 'max-h-96' : 'max-h-0'
                 }`}

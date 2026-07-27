@@ -5,7 +5,7 @@ import { useToast } from '../ui/Toast'
 import { PrivacyPolicyModal } from '../dog-shelter/PrivacyPolicyModal'
 import { TermsOfServiceModal } from '../dog-shelter/TermsOfServiceModal'
 import { FAQModal } from '../dog-shelter/FAQModal'
-import { apiUrl } from '../../config'
+import { api } from '../../services/api'
 
 const quickLinks = [
   { label: 'About Us', href: '#about' },
@@ -40,17 +40,7 @@ export function Footer() {
     setLoading(true)
 
     try {
-      const response = await fetch(apiUrl('/api/newsletter'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Failed to subscribe')
-      }
-
+      await api.newsletter.subscribe(email)
       addToast('Successfully subscribed to newsletter!', 'success')
       setEmail('')
     } catch (err) {
@@ -81,7 +71,9 @@ export function Footer() {
                   Stay updated on our latest rescues and success stories. Join our community and help us make a difference.
                 </p>
                 <form onSubmit={handleSubmit} className="flex gap-2 max-w-md">
+                  <label htmlFor="newsletter-email" className="sr-only">Email Address</label>
                   <input
+                    id="newsletter-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

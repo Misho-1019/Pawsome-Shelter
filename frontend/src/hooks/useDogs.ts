@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { api, type Dog } from '../services/api'
 
 export function useDogs(params?: { size?: string; status?: string }) {
@@ -6,22 +6,30 @@ export function useDogs(params?: { size?: string; status?: string }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchDogs = async () => {
+  const fetchDogs = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true)
       setError(null)
       const data = await api.dogs.list(params)
-      setDogs(data)
+      if (!signal?.aborted) {
+        setDogs(data)
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch dogs')
+      if (!signal?.aborted) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch dogs')
+      }
     } finally {
-      setLoading(false)
+      if (!signal?.aborted) {
+        setLoading(false)
+      }
     }
-  }
-
-  useEffect(() => {
-    fetchDogs()
   }, [params?.size, params?.status])
 
-  return { dogs, loading, error, refetch: fetchDogs }
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchDogs(controller.signal)
+    return () => controller.abort()
+  }, [fetchDogs])
+
+  return { dogs, loading, error, refetch: () => fetchDogs() }
 }

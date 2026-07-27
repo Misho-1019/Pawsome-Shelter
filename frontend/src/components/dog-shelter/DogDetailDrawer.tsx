@@ -1,4 +1,5 @@
 import { Drawer } from '../ui'
+import { useToast } from '../ui/Toast'
 
 interface DogDetailDrawerProps {
   isOpen: boolean
@@ -14,10 +15,11 @@ interface DogDetailDrawerProps {
     tags: string[]
     status: string
   } | null
-  onAdoptClick: (dog: any) => void
+  onAdoptClick: (dog: { id: number; name: string; breed: string; age: string; gender: string; size: string; image: string; tags: string[]; status: string }) => void
 }
 
 export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetailDrawerProps) {
+  const { addToast } = useToast()
   if (!dog) return null
 
   return (
@@ -109,7 +111,7 @@ export function DogDetailDrawer({ isOpen, onClose, dog, onAdoptClick }: DogDetai
           <button
             onClick={() => {
               navigator.clipboard.writeText(window.location.href)
-              alert('Link copied to clipboard!')
+              addToast('Link copied to clipboard!', 'success')
             }}
             className="p-4 border-2 border-outline-variant rounded-xl hover:bg-surface-container transition-colors"
             aria-label="Share"

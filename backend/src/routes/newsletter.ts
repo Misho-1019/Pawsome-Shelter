@@ -1,17 +1,15 @@
 import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { sendNewsletterWelcome } from '../services/email'
+import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
+import { SubscribeNewsletterSchema, validate } from '../validation/schemas'
 
 const router = Router()
 
 // POST /api/newsletter - Subscribe to newsletter (public)
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validate(SubscribeNewsletterSchema), async (req: Request, res: Response) => {
   try {
     const { email } = req.body
-
-    if (!email || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email is required' })
-    }
 
     const existing = await prisma.newsletter.findUnique({ where: { email } })
     if (existing) {
@@ -34,12 +32,27 @@ router.post('/', async (req: Request, res: Response) => {
 })
 
 // GET /api/newsletter - List all subscribers (admin)
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
   try {
     const subscribers = await prisma.newsletter.findMany({ orderBy: { createdAt: 'desc' } })
     res.json(subscribers)
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch subscribers' })
+  }
+})
+
+// DELETE /api/newsletter/:email - Unsubscribe from newsletter (public)
+router.delete('/:email', async (req: Request, res: Response) => {
+  try {
+    const emailParam = Array.isArray(req.params.email) ? req.params.email[0] : req.params.email
+    const subscriber = await prisma.newsletter.findUnique({ where: { email: emailParam } })
+    if (!subscriber) {
+      return res.status(404).json({ error: 'Email not found' })
+    }
+    await prisma.newsletter.delete({ where: { email: emailParam } })
+    res.json({ message: 'Successfully unsubscribed' })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to unsubscribe' })
   }
 })
 

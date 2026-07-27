@@ -17,6 +17,10 @@ const slideVariants = {
   bottom: { hidden: { opacity: 0, y: 100 }, visible: { opacity: 1, y: 0 } },
 }
 
+const prefersReducedMotion = typeof window !== 'undefined'
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false
+
 export function SlideIn({
   children,
   from,
@@ -27,10 +31,6 @@ export function SlideIn({
 }: SlideInProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once, margin: '-100px' })
-
-  const prefersReducedMotion = typeof window !== 'undefined'
-    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    : false
 
   return (
     <motion.div

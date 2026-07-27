@@ -3,12 +3,13 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../db/client'
 import { authenticate, AuthRequest } from '../middleware/auth'
+import { LoginSchema, validate } from '../validation/schemas'
 
 const router = Router()
-const JWT_SECRET = process.env.JWT_SECRET || 'pawsome-shelter-super-secret-key-2026'
+const JWT_SECRET = process.env.JWT_SECRET!
 
 // POST /api/auth/login - Admin login
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', validate(LoginSchema), async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body
 

@@ -1,17 +1,8 @@
 import { Badge, Card, HeartButton } from '../ui'
+import type { Dog } from '../../types/dog-shelter'
 
 interface DogCardProps {
-  dog: {
-    id: number
-    name: string
-    breed: string
-    age: string
-    gender: string
-    size: string
-    image: string
-    tags: string[]
-    status: string
-  }
+  dog: Dog
   onClick: () => void
   onAdoptClick: () => void
   isFavorite: boolean
@@ -25,6 +16,7 @@ export function DogCard({ dog, onClick, onAdoptClick, isFavorite, onToggleFavori
         <img
           src={dog.image}
           alt={`${dog.name} - ${dog.breed}`}
+          loading="lazy"
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute top-4 right-4">

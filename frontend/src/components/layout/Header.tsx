@@ -7,7 +7,7 @@ const navLinks = [
   { label: 'Process', href: '#process' },
   { label: 'Stories', href: '#stories' },
   { label: 'Volunteer', href: '#volunteer' },
-  { label: 'Contact', href: '#about' },
+  { label: 'Contact', href: '#contact' },
 ]
 
 export function Header() {

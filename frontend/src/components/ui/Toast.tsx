@@ -1,4 +1,4 @@
-import { useState, useCallback, createContext, useContext, type ReactNode } from 'react'
+import { useState, useCallback, useEffect, useRef, createContext, useContext, type ReactNode } from 'react'
 
 type ToastType = 'success' | 'error' | 'info'
 
@@ -26,19 +26,31 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const timeoutRefs = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map())
+
+  const removeToast = useCallback((id: number) => {
+    const timeout = timeoutRefs.current.get(id)
+    if (timeout) {
+      clearTimeout(timeout)
+      timeoutRefs.current.delete(id)
+    }
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }, [])
 
   const addToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = Date.now()
     setToasts((prev) => [...prev, { id, message, type }])
 
-    // Auto-remove after 4 seconds
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       removeToast(id)
     }, 4000)
-  }, [])
+    timeoutRefs.current.set(id, timeout)
+  }, [removeToast])
 
-  const removeToast = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  useEffect(() => {
+    return () => {
+      timeoutRefs.current.forEach((timeout) => clearTimeout(timeout))
+    }
   }, [])
 
   return (
@@ -59,7 +71,7 @@ function ToastContainer({
   if (toasts.length === 0) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2" role="status" aria-live="polite">
       {toasts.map((toast) => (
         <div
           key={toast.id}

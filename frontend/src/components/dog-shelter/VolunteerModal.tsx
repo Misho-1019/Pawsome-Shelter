@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Drawer, PhoneInput } from '../ui'
-import { apiUrl } from '../../config'
+import { api } from '../../services/api'
 
 interface VolunteerModalProps {
   isOpen: boolean
@@ -34,14 +34,7 @@ export function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
     setError(null)
 
     try {
-      const response = await fetch(apiUrl('/api/volunteers'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) throw new Error('Failed to submit')
-
+      await api.volunteers.create(formData)
       setSuccess(true)
       setTimeout(() => {
         setFormData({ name: '', email: '', phone: '', availability: '', experience: '', message: '' })

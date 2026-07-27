@@ -2,8 +2,15 @@ import { Router, Request, Response } from 'express'
 import { prisma } from '../db/client'
 import { authenticate, requireAdmin, AuthRequest } from '../middleware/auth'
 import { sendAdoptionConfirmation } from '../services/email'
+import { CreateAdoptionSchema, UpdateAdoptionSchema, validate } from '../validation/schemas'
 
 const router = Router()
+
+function parseId(id: string | string[]): number | null {
+  const value = Array.isArray(id) ? id[0] : id
+  const parsed = parseInt(value)
+  return isNaN(parsed) ? null : parsed
+}
 
 // GET /api/adoptions - List all adoptions (admin)
 router.get('/', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
@@ -19,7 +26,7 @@ router.get('/', authenticate, requireAdmin, async (req: AuthRequest, res: Respon
 })
 
 // POST /api/adoptions - Submit adoption inquiry (public)
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validate(CreateAdoptionSchema), async (req: Request, res: Response) => {
   try {
     const { name, email, phone, message, dogId } = req.body
     const adoption = await prisma.adoption.create({
@@ -43,13 +50,11 @@ router.post('/', async (req: Request, res: Response) => {
 })
 
 // PUT /api/adoptions/:id - Update adoption status (admin)
-router.put('/:id', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
+router.put('/:id', authenticate, requireAdmin, validate(UpdateAdoptionSchema), async (req: AuthRequest, res: Response) => {
   try {
-    const { status } = req.body
-    const adoption = await prisma.adoption.update({
-      where: { id: parseInt(req.params.id as string) },
-      data: { status }
-    })
+    const id = parseId(req.params.id)
+    if (id === null) return res.status(400).json({ error: 'Invalid ID' })
+    const adoption = await prisma.adoption.update({ where: { id }, data: req.body })
     res.json(adoption)
   } catch (error) {
     res.status(500).json({ error: 'Failed to update adoption' })

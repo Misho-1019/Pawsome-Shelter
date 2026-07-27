@@ -49,8 +49,8 @@ const strictLimiter = rateLimit({
 })
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
-app.use(express.json())
+app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:5173', credentials: true }))
+app.use(express.json({ limit: '1mb' }))
 app.use(limiter)
 
 // Routes with rate limiting
@@ -65,6 +65,12 @@ app.use('/api/newsletter', strictLimiter, newsletterRouter)
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
+// Global error handler
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('Unhandled error:', err)
+  res.status(500).json({ error: 'Internal server error' })
 })
 
 app.listen(PORT, () => {
