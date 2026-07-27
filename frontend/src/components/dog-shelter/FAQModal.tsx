@@ -61,6 +61,9 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
               key={index}
               className="border border-outline-variant rounded-xl overflow-hidden"
             >
+              <h3 className="sr-only" id={`faq-question-${index}`}>
+                {faq.question}
+              </h3>
               <button
                 onClick={() => toggleFaq(index)}
                 aria-expanded={expandedIndex === index}
@@ -74,6 +77,7 @@ export function FAQModal({ isOpen, onClose }: FAQModalProps) {
                   className={`material-symbols-outlined text-on-surface-variant transition-transform duration-300 ${
                     expandedIndex === index ? 'rotate-180' : ''
                   }`}
+                  aria-hidden="true"
                 >
                   expand_more
                 </span>

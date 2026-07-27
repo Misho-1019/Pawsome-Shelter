@@ -21,6 +21,12 @@
   --color-outline: #8A7268;
   --color-outline-variant: #DDC1B4;
 
+  /* Error palette (Material Design 3-aligned) */
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
+  --color-on-error: #FFFFFF;
+  --color-on-error-container: #410002;
+
   --font-heading: "Plus Jakarta Sans", sans-serif;
   --font-body: "Inter", sans-serif;
 

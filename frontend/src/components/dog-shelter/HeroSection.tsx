@@ -16,6 +16,8 @@ export function HeroSection() {
         <div
           className="w-full h-full bg-cover bg-center"
           style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
+          role="img"
+          aria-label="Happy dogs playing together at Pawsome Shelter"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-on-background/40 to-transparent" />
       </div>
@@ -44,7 +46,7 @@ export function HeroSection() {
                 className="inline-flex items-center gap-2"
               >
                 Adopt Now
-                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
               </Button>
               <Button
                 variant="ghost"
@@ -65,7 +67,7 @@ export function HeroSection() {
           className="text-white/80 hover:text-white transition-colors animate-bounce"
           aria-label="Scroll to dogs"
         >
-          <span className="material-symbols-outlined text-4xl">keyboard_double_arrow_down</span>
+          <span className="material-symbols-outlined text-4xl" aria-hidden="true">keyboard_double_arrow_down</span>
         </button>
       </FadeIn>
     </section>

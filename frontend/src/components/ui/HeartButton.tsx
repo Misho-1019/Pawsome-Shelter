@@ -19,8 +19,8 @@ export function HeartButton({ isFavorite, onClick, size = 'md' }: HeartButtonPro
       }}
       className={`${sizeClasses[size]} flex items-center justify-center rounded-full transition-all duration-200 ${
         isFavorite
-          ? 'bg-red-50 text-red-500 hover:bg-red-100'
-          : 'bg-white/80 text-gray-400 hover:bg-white hover:text-red-400'
+          ? 'bg-error-container text-error hover:bg-error-container/80'
+          : 'bg-white/80 text-on-surface-variant hover:bg-white hover:text-error'
       }`}
       aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
     >

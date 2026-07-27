@@ -20,7 +20,11 @@ function formatAge(months: number): string {
 
 function DogCardComponent({ dog, onClick, onAdoptClick, isFavorite, onToggleFavorite }: DogCardProps) {
   return (
-    <Card className="group cursor-pointer" onClick={() => onClick(dog)}>
+    <Card
+      className="group cursor-pointer"
+      onClick={() => onClick(dog)}
+      ariaLabel={`View details for ${dog.name}, ${dog.breed}, ${dog.status}`}
+    >
       <div className="relative h-72 overflow-hidden">
         <img
           src={dog.image}

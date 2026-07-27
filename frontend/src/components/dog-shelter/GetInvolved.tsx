@@ -123,7 +123,7 @@ export function GetInvolved() {
                       />
                     </div>
                     {customAmount && parseInt(customAmount) < 1 && (
-                      <p className="text-red-400 text-sm mt-2">Minimum donation is $1</p>
+                       <p className="text-error text-sm mt-2">Minimum donation is $1</p>
                     )}
                   </div>
                 )}

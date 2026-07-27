@@ -81,7 +81,7 @@ function ToastContainer({
             toast.type === 'success'
               ? 'bg-secondary text-white'
               : toast.type === 'error'
-              ? 'bg-red-500 text-white'
+              ? 'bg-error text-on-error'
               : 'bg-primary-container text-white'
           }`}
         >
@@ -96,8 +96,9 @@ function ToastContainer({
           <button
             onClick={() => removeToast(toast.id)}
             className="text-white/80 hover:text-white"
+            aria-label="Dismiss notification"
           >
-            <span className="material-symbols-outlined text-lg">close</span>
+            <span className="material-symbols-outlined text-lg" aria-hidden="true">close</span>
           </button>
         </div>
       ))}

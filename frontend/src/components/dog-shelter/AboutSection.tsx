@@ -57,10 +57,10 @@ export function AboutSection() {
               Professional Care, Emotional Connection.
             </h2>
             <p className="font-body text-lg text-on-surface-variant mb-6 leading-relaxed">
-              Founded a decade ago, Pawsome Shelter has evolved from a small rescue into a high-standard professional institution. We believe that pet adoption is not just a transaction, but a life-changing journey of hope and companionship.
+              Founded a decade ago, Pawsome Shelter has grown from a small rescue into a trusted community institution. We believe that bringing a dog into your life is a meaningful journey of hope, healing, and companionship — for both of you.
             </p>
             <p className="font-body text-on-surface-variant mb-12">
-              Our mission is to reduce cognitive load for adopters through organized processes while maintaining the warm, tactile interface of a true community heart. We treat every hound like royalty until they find their kingdom.
+              Every dog who comes through our doors receives individualized care, training, and love while they wait for their forever home. We walk each family through the adoption process with patience and support, because the right match matters more than a quick placement.
             </p>
             <div className="grid grid-cols-2 gap-8">
               {shelterStats.map((stat, index) => (
