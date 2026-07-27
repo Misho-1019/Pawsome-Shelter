@@ -16,7 +16,7 @@ const sizeClasses = {
 
 export function Drawer({ isOpen, onClose, title, children, size = 'md' }: DrawerProps) {
   const [shouldRender, setShouldRender] = useState(false)
-  const [animationState, setAnimationState] = useState<'idle' | 'opening' | 'open' | 'closing'>('idle')
+  const [isAnimating, setIsAnimating] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose()
@@ -26,29 +26,23 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
     if (isOpen) {
       // Opening sequence
       setShouldRender(true)
-      setAnimationState('idle')
       document.addEventListener('keydown', handleKeyDown)
       document.body.style.overflow = 'hidden'
 
-      // Force a paint of the initial state, then start animation
+      // Double requestAnimationFrame ensures initial state is painted
+      // before starting the animation (smooth opening)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          setAnimationState('opening')
-          // Transition to 'open' after animation completes
-          setTimeout(() => setAnimationState('open'), 500)
+          setIsAnimating(true)
         })
       })
-    } else if (animationState === 'open' || animationState === 'opening') {
+    } else {
       // Closing sequence
-      setAnimationState('closing')
+      setIsAnimating(false)
       document.body.style.overflow = 'unset'
 
-      // Unmount after exit animation completes
-      const timer = setTimeout(() => {
-        setShouldRender(false)
-        setAnimationState('idle')
-      }, 400)
-
+      // Unmount after exit animation completes (400ms)
+      const timer = setTimeout(() => setShouldRender(false), 400)
       return () => clearTimeout(timer)
     }
 
@@ -56,67 +50,26 @@ export function Drawer({ isOpen, onClose, title, children, size = 'md' }: Drawer
       document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = 'unset'
     }
-  }, [isOpen, handleKeyDown, animationState])
+  }, [isOpen, handleKeyDown])  // ✅ Only depends on isOpen
 
   if (!shouldRender) return null
-
-  const isOpening = animationState === 'opening'
-  const isOpenComplete = animationState === 'open'
-  const isClosing = animationState === 'closing'
-
-  // Determine animation styles
-  const getDrawerStyle = () => {
-    if (isOpening) {
-      return {
-        animation: 'drawer-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-      }
-    }
-    if (isOpenComplete) {
-      return {
-        transform: 'translateX(0)',
-      }
-    }
-    if (isClosing) {
-      return {
-        animation: 'drawer-slide-out 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards',
-      }
-    }
-    return {}
-  }
-
-  const getBackdropStyle = () => {
-    if (isOpening) {
-      return {
-        animation: 'backdrop-fade-in 0.4s ease-out forwards',
-      }
-    }
-    if (isOpenComplete) {
-      return {
-        opacity: 1,
-      }
-    }
-    if (isClosing) {
-      return {
-        animation: 'backdrop-fade-out 0.3s ease-in forwards',
-      }
-    }
-    return { opacity: 0 }
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50"
-        style={getBackdropStyle()}
+        className="absolute inset-0 bg-black/50 transition-opacity duration-400"
+        style={{ opacity: isAnimating ? 1 : 0 }}
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer Panel */}
       <div
-        className={`relative ${sizeClasses[size]} h-full bg-white shadow-2xl`}
-        style={getDrawerStyle()}
+        className={`relative ${sizeClasses[size]} h-full bg-white shadow-2xl transition-transform duration-500 ease-out`}
+        style={{
+          transform: isAnimating ? 'translateX(0)' : 'translateX(100%)',
+        }}
         role="dialog"
         aria-modal="true"
         aria-label={title}
