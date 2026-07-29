@@ -41,6 +41,9 @@
 
   /* Container max-width — used by max-w-container class across 14 components */
   --container: 1280px;
+
+  /* 3D perspective for carousel */
+  --perspective-dramatic: 1200px;
 }
 
 .material-symbols-outlined {
@@ -134,6 +137,15 @@
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out forwards;
+}
+
+/* Hide scrollbar for mobile carousel */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* ===== PHONE INPUT STYLES ===== */

@@ -228,6 +228,55 @@ async function main() {
       image: '/images/testimonial-3.jpg',
       rating: 5,
     },
+    {
+      name: 'Maria & Carlos with Luna',
+      dogName: 'Luna',
+      quote: 'Our apartment felt empty for months until Luna bounded in. She turned our small space into a home full of joy and zoomies.',
+      image: '/images/testimonial-1.jpg',
+      rating: 5,
+    },
+    {
+      name: 'The Patel Family with Charlie',
+      dogName: 'Charlie',
+      quote: 'The kids were nervous at first, but Charlie won them over in minutes. He is patient, gentle, and the heart of our family now.',
+      image: '/images/testimonial-2.jpg',
+      rating: 5,
+    },
+    {
+      name: 'James (retiree) with Max',
+      dogName: 'Max',
+      quote: 'I was hesitant about adopting a senior dog, but Max has been my best companion. We take slow walks together every morning.',
+      image: '/images/testimonial-3.jpg',
+      rating: 5,
+    },
+    {
+      name: 'Alex & Sam with Daisy',
+      dogName: 'Daisy',
+      quote: 'Daisy follows us everywhere. She has this incredible ability to sense when either of us needs extra love.',
+      image: '/images/testimonial-1.jpg',
+      rating: 4,
+    },
+    {
+      name: 'The Okafor Family with Bella',
+      dogName: 'Bella',
+      quote: 'We wanted a protective breed and Bella fits perfectly. She is calm with the kids and alert at the door. Total gentle guardian.',
+      image: '/images/testimonial-2.jpg',
+      rating: 5,
+    },
+    {
+      name: 'The Hendersons with Buddy',
+      dogName: 'Buddy',
+      quote: 'Buddy has more personality than any dog we have ever met. He makes us laugh every single day with his goofy antics.',
+      image: '/images/testimonial-3.jpg',
+      rating: 5,
+    },
+    {
+      name: 'Rachel with Luna',
+      dogName: 'Luna',
+      quote: 'After losing my old dog, I was scared to love again. Pawsome Shelter matched me with the perfect gentle soul to heal my heart.',
+      image: '/images/testimonial-1.jpg',
+      rating: 4,
+    },
   ]
 
   for (const t of testimonials) {

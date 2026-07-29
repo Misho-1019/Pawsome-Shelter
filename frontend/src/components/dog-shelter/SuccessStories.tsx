@@ -1,6 +1,7 @@
 import { useTestimonials } from '../../hooks/useTestimonials'
-import { FadeIn, StaggerContainer, StaggerItem } from '../ui/animations'
-import { Skeleton, SkeletonAvatar } from '../ui/Skeleton'
+import { FadeIn } from '../ui/animations'
+import { TestimonialsCarousel } from './TestimonialsCarousel'
+import { TestimonialsCarouselMobile } from './TestimonialsCarouselMobile'
 
 export function SuccessStories() {
   const { testimonials, loading, error } = useTestimonials()
@@ -16,7 +17,7 @@ export function SuccessStories() {
   }
 
   return (
-    <section className="py-32" id="stories">
+    <section className="py-32 overflow-hidden" id="stories">
       <div className="max-w-container mx-auto px-4 md:px-12">
         <FadeIn direction="up">
           <div className="text-center mb-16">
@@ -29,71 +30,27 @@ export function SuccessStories() {
           </div>
         </FadeIn>
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8" aria-busy={loading} aria-live="polite">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl shadow-premium">
-                <div className="flex gap-1 mb-6">
-                  {[1, 2, 3, 4, 5].map((j) => (
-                    <Skeleton key={j} className="w-5 h-5" width="full" rounded="rounded" />
-                  ))}
-                </div>
-                <Skeleton className="h-20 mb-8" width="full" />
-                <div className="flex items-center gap-4">
-                  <SkeletonAvatar />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4" width="1/2" />
-                    <Skeleton className="h-3" width="1/3" />
-                  </div>
-                </div>
-              </div>
-            ))}
+        {testimonials.length === 0 && !loading ? (
+          <div className="text-center py-16">
+            <span className="material-symbols-outlined text-7xl text-on-surface-variant mb-4 block">
+              sentiment_satisfied
+            </span>
+            <h3 className="font-heading text-xl mb-2">No success stories yet</h3>
+            <p className="text-on-surface-variant">
+              Check back soon to hear from our happy adopters!
+            </p>
           </div>
         ) : (
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial) => (
-              <StaggerItem key={testimonial.id}>
-                <div className="bg-white p-8 rounded-3xl shadow-premium">
-                  {/* Stars */}
-                  <div
-                    className="flex gap-1 text-primary mb-6"
-                    role="img"
-                    aria-label={`${testimonial.rating} out of 5 stars`}
-                  >
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
-                      <span
-                        key={i}
-                        className="material-symbols-outlined"
-                        style={{ fontVariationSettings: "'FILL' 1" }}
-                        aria-hidden="true"
-                      >
-                        star
-                      </span>
-                    ))}
-                  </div>
-
-                  <p className="font-body italic text-on-surface mb-8">
-                    &ldquo;{testimonial.quote}&rdquo;
-                  </p>
-
-                  <div className="flex items-center gap-4">
-                    <img
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                      loading="lazy"
-                      className="w-14 h-14 rounded-full object-cover"
-                    />
-                    <div>
-                      <h5 className="font-body text-sm font-semibold">{testimonial.name}</h5>
-                      <p className="text-xs text-on-surface-variant">
-                        Adopted {testimonial.dogName}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+          <>
+            {/* Desktop: 3D carousel with arrows */}
+            <div className="hidden md:block">
+              <TestimonialsCarousel testimonials={testimonials} loading={loading} />
+            </div>
+            {/* Mobile: swipe carousel */}
+            <div className="md:hidden">
+              <TestimonialsCarouselMobile testimonials={testimonials} loading={loading} />
+            </div>
+          </>
         )}
       </div>
     </section>
