@@ -157,42 +157,22 @@ export function TestimonialsCarousel({ testimonials, loading = false }: Testimon
         </div>
       </div>
 
-      {/* Arrow Controls */}
-      <div className="flex justify-center items-center gap-4 mt-8">
-        <button
-          onClick={prev}
-          aria-label="Previous testimonial"
-          className="w-12 h-12 rounded-full bg-white border-2 border-outline-variant hover:border-primary hover:bg-primary hover:text-white transition-colors flex items-center justify-center text-on-surface-variant"
-        >
-          <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
-        </button>
+      {/* Arrow Controls — positioned on left/right sides of the card */}
+      <button
+        onClick={prev}
+        aria-label="Previous testimonial"
+        className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white border-2 border-outline-variant hover:border-primary hover:bg-primary hover:text-white transition-colors flex items-center justify-center text-on-surface-variant z-40 shadow-lg"
+      >
+        <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+      </button>
 
-        {/* Dot Indicators */}
-        <div className="flex gap-2" role="tablist" aria-label="Testimonial selector">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === currentIndex}
-              aria-label={`Go to testimonial ${i + 1} of ${testimonials.length}`}
-              onClick={() => setCurrentIndex(i)}
-              className={`h-3 rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? 'bg-primary w-8'
-                  : 'bg-outline-variant w-3 hover:bg-outline'
-              }`}
-            />
-          ))}
-        </div>
-
-        <button
-          onClick={next}
-          aria-label="Next testimonial"
-          className="w-12 h-12 rounded-full bg-white border-2 border-outline-variant hover:border-primary hover:bg-primary hover:text-white transition-colors flex items-center justify-center text-on-surface-variant"
-        >
-          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-        </button>
-      </div>
+      <button
+        onClick={next}
+        aria-label="Next testimonial"
+        className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white border-2 border-outline-variant hover:border-primary hover:bg-primary hover:text-white transition-colors flex items-center justify-center text-on-surface-variant z-40 shadow-lg"
+      >
+        <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+      </button>
 
       {/* Screen reader announcement */}
       <div className="sr-only" aria-live="polite" aria-atomic="true">
