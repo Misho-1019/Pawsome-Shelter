@@ -35,7 +35,7 @@ export function issueCsrfToken(_req: Request, res: Response, next: NextFunction)
   res.cookie(CSRF_COOKIE, token, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
   })
   next()

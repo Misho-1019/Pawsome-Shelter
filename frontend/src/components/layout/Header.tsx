@@ -91,7 +91,7 @@ export function Header() {
 
         <div className="hidden md:flex items-center gap-3">
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={() => window.location.assign('/admin/login')}
             className="font-body"
@@ -140,7 +140,7 @@ export function Header() {
           </a>
         ))}
         <Button
-          variant="ghost"
+          variant="secondary"
           size="lg"
           onClick={() => {
             setMobileMenuOpen(false)

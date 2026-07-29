@@ -2,8 +2,9 @@
 // Change these values for production deployment
 
 export const config = {
-  // Backend API URL
-  apiBaseUrl: import.meta.env.VITE_API_URL || 'http://localhost:3001',
+  // Backend API URL — empty means use relative URLs (same-origin via Vite proxy in dev,
+  // reverse proxy in production). Override with VITE_API_URL if needed.
+  apiBaseUrl: import.meta.env.VITE_API_URL || '',
 
   // Frontend URL (for email links)
   frontendUrl: import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173',

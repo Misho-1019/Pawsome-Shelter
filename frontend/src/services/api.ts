@@ -36,8 +36,10 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   return response.json()
 }
 
+const TOKEN_KEY = 'pawsome-admin-token'
+
 function authHeaders(): Record<string, string> {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem(TOKEN_KEY)
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 

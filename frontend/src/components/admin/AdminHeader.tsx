@@ -93,7 +93,7 @@ export function AdminHeader() {
           <span className="text-sm text-on-surface-variant hidden sm:inline">
             {user?.email}
           </span>
-          <Button variant="ghost" size="sm" onClick={logout}>
+          <Button variant="secondary" size="sm" onClick={logout}>
             Logout
           </Button>
         </div>

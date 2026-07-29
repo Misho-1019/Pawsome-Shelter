@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@layer base {
+  html, body {
+    overflow-x: hidden;
+  }
+}
+
 @theme {
   --color-primary: #9E4203;
   --color-primary-container: #E97A3D;
@@ -32,6 +38,9 @@
 
   --shadow-premium: 0px 4px 20px rgba(26, 26, 46, 0.05);
   --shadow-premium-hover: 0px 12px 32px rgba(26, 26, 46, 0.12);
+
+  /* Container max-width — used by max-w-container class across 14 components */
+  --container: 1280px;
 }
 
 .material-symbols-outlined {
