@@ -142,12 +142,3 @@ export interface AdoptionStep {
   description: string
   icon: string
 }
-
-export interface ShelterStat {
-  label: string
-  value: string
-}
-
-export interface ShelterStats extends ShelterStat {
-  numericValue: number
-}
