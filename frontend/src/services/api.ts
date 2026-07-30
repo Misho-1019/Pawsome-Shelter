@@ -1,5 +1,5 @@
 import { apiUrl } from '../config'
-import type { Dog, Testimonial, PaginatedResponse, Adoption, Volunteer, Newsletter, User, LoginResponse, ContentSection } from '../types/dog-shelter'
+import type { Dog, Testimonial, PaginatedResponse, Adoption, Volunteer, Newsletter, User, LoginResponse, ContentSection, Donation, CheckoutSession, DonationStats } from '../types/dog-shelter'
 
 const API_BASE = apiUrl('')
 
@@ -60,6 +60,13 @@ export interface VolunteerCreateInput {
   phone?: string
   availability: string
   experience?: string
+  message?: string
+}
+
+export interface DonationCreateInput {
+  amount: number              // in dollars (e.g., 25 = $25.00)
+  donorEmail?: string
+  donorName?: string
   message?: string
 }
 
@@ -254,4 +261,33 @@ export const api = {
   },
 
   health: () => request<{ status: string; timestamp: string; database: string }>('/health'),
+
+  donations: {
+    createCheckout: (data: DonationCreateInput) =>
+      request<CheckoutSession>('/donations/create-checkout', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    list: (params?: { page?: number; pageSize?: number; status?: string }) => {
+      const query = params
+        ? new URLSearchParams(
+            Object.entries(params)
+              .filter(([, v]) => v !== undefined)
+              .map(([k, v]) => [k, String(v)])
+          ).toString()
+        : ''
+      return request<PaginatedResponse<Donation>>(
+        `/donations${query ? `?${query}` : ''}`,
+        { headers: authHeaders() }
+      )
+    },
+    get: (id: number) =>
+      request<Donation>(`/donations/${id}`, {
+        headers: authHeaders(),
+      }),
+    stats: () =>
+      request<DonationStats>('/donations/stats', {
+        headers: authHeaders(),
+      }),
+  },
 }

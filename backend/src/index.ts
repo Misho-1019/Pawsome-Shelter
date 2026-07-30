@@ -12,6 +12,7 @@ import authRouter from './routes/auth'
 import contentRouter from './routes/content'
 import volunteersRouter from './routes/volunteers'
 import newsletterRouter from './routes/newsletter'
+import donationsRouter from './routes/donations'
 import { issueCsrfToken, verifyCsrfToken } from './middleware/csrf'
 import { requestId } from './middleware/requestId'
 import { errorHandler } from './middleware/errorHandler'
@@ -64,6 +65,10 @@ app.use(cors({
 
 // Cookie parser for CSRF
 app.use(cookieParser())
+
+// Stripe webhook needs RAW body for signature verification.
+// This MUST be registered before express.json() consumes the body.
+app.use('/api/v1/donations/webhook', express.raw({ type: 'application/json' }))
 
 // Body parser with size limit
 app.use(express.json({ limit: '1mb' }))
@@ -142,6 +147,7 @@ app.get('/api/v1', (_req, res) => {
       newsletter: '/api/v1/newsletter',
       content: '/api/v1/content',
       auth: '/api/v1/auth',
+      donations: '/api/v1/donations',
     },
   })
 })
@@ -154,6 +160,7 @@ app.use('/api/v1/auth', strictLimiter, authRouter)
 app.use('/api/v1/content', contentRouter)
 app.use('/api/v1/volunteers', strictLimiter, volunteersRouter)
 app.use('/api/v1/newsletter', strictLimiter, newsletterRouter)
+app.use('/api/v1/donations', donationsRouter)
 
 // CORS rejection handler
 app.use((err: Error, _req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -14,7 +14,7 @@ export function AdminHeader() {
 
   // Mark the active section in the nav based on scroll position
   useEffect(() => {
-    const sections = ['stats', 'dogs', 'inquiries', 'content', 'subscribers']
+    const sections = ['stats', 'dogs', 'inquiries', 'content', 'donations', 'subscribers']
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -78,6 +78,14 @@ export function AdminHeader() {
             className="text-sm text-on-surface-variant hover:text-primary transition-colors"
           >
             Content
+          </a>
+          <a
+            href="#donations"
+            onClick={(e) => { e.preventDefault(); scrollToSection('donations') }}
+            data-admin-nav
+            className="text-sm text-on-surface-variant hover:text-primary transition-colors"
+          >
+            Donations
           </a>
           <a
             href="#subscribers"

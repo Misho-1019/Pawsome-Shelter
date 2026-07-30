@@ -5,6 +5,8 @@ import { BackToTop } from './components/ui/BackToTop'
 import { AuthProvider } from './contexts/AuthContext'
 import { AdminApp } from './components/admin/AdminApp'
 import { DogShelter } from './pages/DogShelter'
+import { DonationSuccess } from './pages/DonationSuccess'
+import { DonationCancel } from './pages/DonationCancel'
 import { queryClient } from './config/queryClient'
 
 function isAdminRoute(): boolean {
@@ -12,10 +14,18 @@ function isAdminRoute(): boolean {
   return window.location.pathname.startsWith('/admin')
 }
 
-function App() {
-  const adminMode = isAdminRoute()
+function isDonationSuccessRoute(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.location.pathname === '/donation/success'
+}
 
-  if (adminMode) {
+function isDonationCancelRoute(): boolean {
+  if (typeof window === 'undefined') return false
+  return window.location.pathname === '/donation/cancel'
+}
+
+function App() {
+  if (isAdminRoute()) {
     return (
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
@@ -24,6 +34,30 @@ function App() {
               <AdminApp />
               <BackToTop />
             </AuthProvider>
+          </ToastProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    )
+  }
+
+  if (isDonationSuccessRoute()) {
+    return (
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <DonationSuccess />
+          </ToastProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    )
+  }
+
+  if (isDonationCancelRoute()) {
+    return (
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <DonationCancel />
           </ToastProvider>
         </QueryClientProvider>
       </ErrorBoundary>

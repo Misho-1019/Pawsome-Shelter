@@ -79,6 +79,13 @@ export const LoginSchema = z.object({
   password: z.string().min(1),
 })
 
+export const CreateCheckoutSchema = z.object({
+  amount: z.number().positive().max(999999),
+  donorEmail: z.string().email().optional(),
+  donorName: z.string().min(1).max(100).optional(),
+  message: z.string().max(500).optional(),
+})
+
 // Dog filter query schema (for GET /api/dogs)
 export const DogFilterSchema = z.object({
   size: SizeEnum.optional(),

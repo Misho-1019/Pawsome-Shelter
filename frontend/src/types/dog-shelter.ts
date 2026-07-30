@@ -9,6 +9,7 @@ export type DogStatus = 'Available' | 'Pending' | 'Adopted'
 export type EnergyLevel = 'Low' | 'Medium' | 'High'
 export type AdoptionStatus = 'Pending' | 'InReview' | 'MeetGreet' | 'Approved' | 'Rejected' | 'Completed'
 export type VolunteerStatus = 'Pending' | 'Approved' | 'Rejected'
+export type DonationStatus = 'Pending' | 'Succeeded' | 'Failed' | 'Refunded'
 
 export interface Dog {
   id: number
@@ -107,6 +108,31 @@ export interface PaginatedResponse<T> {
     pageSize: number
     totalPages: number
   }
+}
+
+export interface Donation {
+  id: number
+  amount: number             // in cents
+  currency: string
+  status: DonationStatus
+  donorEmail: string | null
+  donorName: string | null
+  message: string | null
+  stripeSessionId: string
+  stripePaymentId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CheckoutSession {
+  url: string
+  sessionId: string
+}
+
+export interface DonationStats {
+  totalRaisedCents: number
+  totalDonations: number
+  uniqueDonors: number
 }
 
 // Static content types (used by HardcodedSection fallbacks)

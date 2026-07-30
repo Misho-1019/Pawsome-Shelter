@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from 'express'
 const CSRF_HEADER = 'x-csrf-token'
 const CSRF_COOKIE = 'csrf-token'
 
-// Endpoints that don't require CSRF (they have their own protection: credentials for login, signed token for unsubscribe)
+// Endpoints that don't require CSRF (they have their own protection: credentials for login, signed token for unsubscribe, Stripe webhook signature)
 const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login']
-const CSRF_EXEMPT_PREFIXES = ['/api/v1/newsletter/unsubscribe']
+const CSRF_EXEMPT_PREFIXES = ['/api/v1/newsletter/unsubscribe', '/api/v1/donations/webhook']
 
 function isCsrfExempt(path: string): boolean {
   if (CSRF_EXEMPT_PATHS.includes(path)) return true

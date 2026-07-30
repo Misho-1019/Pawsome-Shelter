@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import { VolunteerDrawer } from './VolunteerDrawer'
 import { SlideIn } from '../ui/animations'
-import { useToast } from '../ui/Toast'
+import { Drawer, FormField, FormError, SubmitButton } from '../ui'
+import { api } from '../../services/api'
 
 export function GetInvolved() {
   const [donationAmount, setDonationAmount] = useState(50)
   const [customAmount, setCustomAmount] = useState('')
   const [isCustom, setIsCustom] = useState(false)
   const [isVolunteerOpen, setIsVolunteerOpen] = useState(false)
-  const { addToast } = useToast()
+  const [isCheckoutDrawerOpen, setIsCheckoutDrawerOpen] = useState(false)
+  const [donorEmail, setDonorEmail] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+
 
   const handleAmountClick = (amount: number) => {
     setDonationAmount(amount)
@@ -32,7 +37,39 @@ export function GetInvolved() {
   const handleDonate = () => {
     const amount = isCustom ? parseInt(customAmount) : donationAmount
     if (amount >= 1) {
-      addToast(`Thank you for your $${amount} donation! (This is a demo - no actual payment will be processed)`, 'success')
+      // Open checkout drawer for email collection
+      setCheckoutError(null)
+      setIsCheckoutDrawerOpen(true)
+    }
+  }
+
+  const handleCheckout = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCheckoutError(null)
+
+    const amount = isCustom ? parseInt(customAmount) : donationAmount
+    if (amount < 1) {
+      setCheckoutError('Minimum donation is $1')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      const response = await api.donations.createCheckout({
+        amount,
+        donorEmail: donorEmail || undefined,
+      })
+
+      if (response.url) {
+        // Redirect to Stripe hosted checkout
+        window.location.href = response.url
+      } else {
+        setCheckoutError('Failed to create checkout session')
+      }
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : 'Failed to start checkout')
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -149,6 +186,75 @@ export function GetInvolved() {
       </section>
 
       <VolunteerDrawer isOpen={isVolunteerOpen} onClose={() => setIsVolunteerOpen(false)} />
+
+      {/* Checkout Drawer for Email Collection */}
+      <Drawer
+        isOpen={isCheckoutDrawerOpen}
+        onClose={() => {
+          if (!isProcessing) {
+            setIsCheckoutDrawerOpen(false)
+            setDonorEmail('')
+            setCheckoutError(null)
+          }
+        }}
+        title="Complete your donation"
+        size="sm"
+      >
+        <form onSubmit={handleCheckout} className="p-6 space-y-5" noValidate>
+          <p className="text-on-surface-variant text-sm">
+            Enter your email to receive a receipt. You'll be redirected to our secure payment page to complete your donation.
+          </p>
+
+          <div className="bg-surface-container-low p-4 rounded-xl">
+            <p className="text-sm text-on-surface-variant">Donation amount</p>
+            <p className="text-2xl font-heading text-primary">
+              ${isCustom ? customAmount || '0' : donationAmount}
+            </p>
+          </div>
+
+          <FormField
+            label="Email address"
+            name="email"
+            type="email"
+            required
+            value={donorEmail}
+            onChange={(e) => setDonorEmail(e.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
+          />
+
+          {checkoutError && (
+            <FormError title="Checkout failed">{checkoutError}</FormError>
+          )}
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setIsCheckoutDrawerOpen(false)
+                setDonorEmail('')
+                setCheckoutError(null)
+              }}
+              disabled={isProcessing}
+              className="flex-1 px-6 py-3 rounded-xl font-semibold text-sm border-2 border-outline-variant hover:bg-surface-container transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <SubmitButton
+              loading={isProcessing}
+              loadingText="Redirecting..."
+              disabled={!donorEmail}
+              className="flex-1"
+            >
+              Continue to Payment
+            </SubmitButton>
+          </div>
+
+          <p className="text-xs text-on-surface-variant text-center">
+            Secure payment powered by Stripe. Your card details are never stored on our servers.
+          </p>
+        </form>
+      </Drawer>
     </>
   )
 }

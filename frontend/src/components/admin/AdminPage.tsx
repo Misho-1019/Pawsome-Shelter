@@ -7,6 +7,7 @@ import { DogsSection } from './DogsSection'
 import { InquiriesSection } from './InquiriesSection'
 import { ContentSection } from './ContentSection'
 import { SubscribersSection } from './SubscribersSection'
+import { DonationsSection } from './DonationsSection'
 
 interface AdminStats {
   dogsAvailable: number
@@ -14,7 +15,8 @@ interface AdminStats {
   pendingInquiries: number
   activeVolunteers: number
   subscribers: number
-  totalAdoptions: number
+  totalRaisedCents: number
+  totalDonations: number
 }
 
 const ZERO_STATS: AdminStats = {
@@ -23,7 +25,17 @@ const ZERO_STATS: AdminStats = {
   pendingInquiries: 0,
   activeVolunteers: 0,
   subscribers: 0,
-  totalAdoptions: 0,
+  totalRaisedCents: 0,
+  totalDonations: 0,
+}
+
+function formatCents(cents: number): string {
+  if (cents === 0) return '$0'
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0,
+  }).format(cents / 100)
 }
 
 export function AdminPage() {
@@ -34,11 +46,12 @@ export function AdminPage() {
   const fetchStats = useCallback(async () => {
     try {
       setLoading(true)
-      const [dogs, adoptions, volunteers, subscribers] = await Promise.all([
+      const [dogs, adoptions, volunteers, subscribers, donationStats] = await Promise.all([
         api.dogs.list({ pageSize: 100 }),
         api.adoptions.list({ pageSize: 100, status: 'Pending' }),
         api.volunteers.list({ pageSize: 100, status: 'Approved' }),
         api.newsletter.list({ pageSize: 1 }), // just need the total
+        api.donations.stats().catch(() => ({ totalRaisedCents: 0, totalDonations: 0, uniqueDonors: 0 })),
       ])
       setStats({
         dogsTotal: dogs.meta.total,
@@ -46,7 +59,8 @@ export function AdminPage() {
         pendingInquiries: adoptions.meta.total,
         activeVolunteers: volunteers.meta.total,
         subscribers: subscribers.meta.total,
-        totalAdoptions: 0,
+        totalRaisedCents: donationStats.totalRaisedCents,
+        totalDonations: donationStats.totalDonations,
       })
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to load stats', 'error')
@@ -66,6 +80,18 @@ export function AdminPage() {
           <h1 className="font-heading text-3xl text-on-surface mb-1">Overview</h1>
           <p className="text-on-surface-variant mb-6">A quick look at your shelter's activity</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <StatsCard
+              label="Total Raised"
+              value={loading ? '…' : formatCents(stats.totalRaisedCents)}
+              icon="volunteer_activism"
+              colorClass="text-secondary"
+            />
+            <StatsCard
+              label="Donations"
+              value={loading ? '…' : stats.totalDonations}
+              icon="receipt_long"
+              colorClass="text-primary"
+            />
             <StatsCard
               label="Dogs Available"
               value={loading ? '…' : stats.dogsAvailable}
@@ -106,6 +132,8 @@ export function AdminPage() {
         <InquiriesSection />
         <div className="border-t border-outline-variant" />
         <ContentSection />
+        <div className="border-t border-outline-variant" />
+        <DonationsSection />
         <div className="border-t border-outline-variant" />
         <SubscribersSection />
       </main>
