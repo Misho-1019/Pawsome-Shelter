@@ -32,12 +32,19 @@ function timingSafeEqual(a: string, b: string): boolean {
 export function issueCsrfToken(_req: Request, res: Response, next: NextFunction) {
   const secret = getCsrfSecret()
   const token = Buffer.from(secret).toString('base64url').slice(0, 32)
+
+  // Set cookie for same-origin (local dev via Vite proxy)
   res.cookie(CSRF_COOKIE, token, {
     httpOnly: false,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: 'none',
     path: '/',
   })
+
+  // Also set token in response header for cross-origin (production Vercel + Fly.io)
+  // Frontend reads this header and stores the token in JS memory
+  res.setHeader('X-CSRF-Token', token)
+
   next()
 }
 

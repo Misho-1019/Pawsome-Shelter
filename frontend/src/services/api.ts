@@ -3,10 +3,9 @@ import type { Dog, Testimonial, PaginatedResponse, Adoption, Volunteer, Newslett
 
 const API_BASE = apiUrl('')
 
-function getCsrfToken(): string {
-  const match = document.cookie.match(/(?:^|;\s*)csrf-token=([^;]+)/)
-  return match ? match[1] : ''
-}
+// CSRF token stored in JavaScript memory (not cookies)
+// Updated from X-CSRF-Token response header on every request
+let csrfToken = ''
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
@@ -16,17 +15,21 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 
   // Include CSRF token for state-changing methods
   const method = (options?.method || 'GET').toUpperCase()
-  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
-    const csrfToken = getCsrfToken()
-    if (csrfToken) {
-      headers['x-csrf-token'] = csrfToken
-    }
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method) && csrfToken) {
+    headers['x-csrf-token'] = csrfToken
   }
 
   const response = await fetch(`${API_BASE}${url}`, {
     ...options,
     headers,
+    credentials: 'include',
   })
+
+  // Capture CSRF token from response header for subsequent requests
+  const newToken = response.headers.get('X-CSRF-Token')
+  if (newToken) {
+    csrfToken = newToken
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Request failed' }))
