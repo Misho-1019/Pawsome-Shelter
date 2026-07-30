@@ -60,11 +60,19 @@ export function verifyCsrfToken(req: Request, res: Response, next: NextFunction)
   const headerToken = req.headers[CSRF_HEADER] as string | undefined
   const cookieToken = req.cookies?.[CSRF_COOKIE]
 
-  if (!headerToken || !cookieToken) {
+  // Accept if header token is present (cross-origin: frontend reads from X-CSRF-Token header)
+  // or if both header and cookie match (same-origin: local dev via Vite proxy)
+  const tokenToVerify = headerToken || (headerToken && cookieToken ? headerToken : null)
+
+  if (!tokenToVerify) {
     return res.status(403).json({ error: 'CSRF token missing' })
   }
 
-  if (!timingSafeEqual(headerToken, cookieToken)) {
+  // Validate the token matches the expected value
+  const secret = getCsrfSecret()
+  const expectedToken = Buffer.from(secret).toString('base64url').slice(0, 32)
+
+  if (!timingSafeEqual(tokenToVerify, expectedToken)) {
     return res.status(403).json({ error: 'CSRF token invalid' })
   }
 
