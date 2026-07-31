@@ -1,32 +1,114 @@
-# React + TypeScript + Vite
+# Pawsome Shelter Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + TypeScript + Tailwind CSS v4 SPA for the Pawsome Shelter adoption site.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 1. Install dependencies
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### 2. Configure environment
+
+Copy `.env.example` to `.env`:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_URL` | Backend API URL (empty = same-origin via proxy) |
+| `VITE_FRONTEND_URL` | Frontend URL for email links |
+| `VITE_PAYPAL_CLIENT_ID` | PayPal client ID for JS SDK |
+
+### 3. Run the dev server
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173`.
+
+## Architecture
+
+```
+frontend/
+  src/
+    App.tsx                # Root component (route detection)
+    main.tsx               # React entry point
+    index.css              # Tailwind v4 theme + custom animations
+    config.ts              # API URL helpers
+    pages/
+      DogShelter.tsx       # Main public page (lazy-loaded sections)
+      DonationSuccess.tsx  # Post-donation success page
+      DonationCancel.tsx   # Post-donation cancel page
+    components/
+      layout/              # Header, Footer, Layout wrapper
+      dog-shelter/         # 17 public-facing components
+      admin/               # 13 admin panel components
+      ui/                  # 17 reusable UI components
+      seo/                 # Structured data (JSON-LD)
+    contexts/
+      AuthContext.tsx       # Auth state management (JWT)
+    hooks/
+      useDogs.ts           # TanStack Query wrapper
+      useTestimonials.ts   # TanStack Query wrapper
+      useContent.ts        # CMS content fetcher
+      useFavorites.ts      # localStorage-based favorites
+      useForm.ts           # Generic controlled form hook
+    services/
+      api.ts               # API client (all endpoints, CSRF)
+    types/
+      dog-shelter.ts       # TypeScript types mirroring Prisma
+    data/
+      dogs.ts              # Static fallback data
+```
+
+## Key Components
+
+### Public Site (dog-shelter/)
+
+- **HeroSection** — CMS-driven hero with scroll CTAs
+- **DogGrid** — Filterable dog grid with 7 filter modes
+- **DogCard** — Memoized dog card with favorite toggle
+- **DogDetailDrawer** — Full dog profile in drawer
+- **AdoptionDrawer** — Adoption inquiry form
+- **VolunteerDrawer** — Volunteer application form
+- **GetInvolved** — Donation UI with Stripe + PayPal buttons
+- **SuccessStories** — Desktop 3D + mobile swipe carousel
+- **TestimonialsCarousel** — Testimonials with ratings
+
+### Admin Panel (admin/)
+
+- **AdminApp** — Auth gate (login vs admin page)
+- **AdminPage** — Single-page admin with 6 sections
+- **DogsSection** — Dog CRUD with table + form
+- **InquiriesSection** — Adoption + volunteer tables
+- **ContentSection** — Hero/About/Contact editors
+- **DonationsSection** — Donation tracking with provider badges
+- **SubscribersSection** — Newsletter subscriber table
+
+### UI Components (ui/)
+
+- **Drawer** — Accessible slide-in panel with focus trap
+- **Button** — Variant/size system with forwardRef
+- **Card** — Keyboard accessible with role="button"
+- **Toast** — Toast notification system with auto-dismiss
+- **ErrorBoundary** — Graceful crash recovery
+- **FormField** — Label + input + error with aria attributes
+- **SubmitButton** — Loading state with spinner
+- **HeartButton** — Favorite toggle with aria-label
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start Vite dev server |
+| `npm run build` | TypeScript check + production build |
+| `npm run preview` | Preview production build |
+| `npm run test` | Run tests |
+| `npm run lint` | Lint with Oxlint |
+| `npm run typecheck` | TypeScript check without emitting |

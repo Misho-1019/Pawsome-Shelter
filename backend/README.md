@@ -29,7 +29,14 @@ Required environment variables:
 | `ADMIN_PASSWORD` | Random password for initial admin user |
 | `FRONTEND_URL` | Frontend URL for email links |
 | `API_URL` | Backend URL for unsubscribe links |
+| `STRIPE_SECRET_KEY` | Stripe secret key (test/live) |
+| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret |
+| `PAYPAL_CLIENT_ID` | PayPal client ID |
+| `PAYPAL_CLIENT_SECRET` | PayPal client secret |
+| `PAYPAL_MODE` | PayPal mode (sandbox/live) |
 | `RESEND_API_KEY` | (Optional) Resend API key for emails |
+| `EMAIL_FROM` | (Optional) Email from address |
 
 Generate secrets with:
 
@@ -42,24 +49,16 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 For **first-time setup** (dev):
 
 ```bash
-# Push the schema directly (no migration history yet)
 npx prisma db push
-
-# Seed initial data (admin user, dogs, testimonials, content sections)
 npm run db:seed
 ```
 
 For **production**:
 
 ```bash
-# Apply all pending migrations
 npx prisma migrate deploy
-
-# Seed initial data
 npm run db:seed
 ```
-
-> **Windows note:** Prisma 5.22.0 has a known bug where the migration resolver cannot find migration files in the `prisma/migrations/` directory on Windows, even when they exist. If `prisma migrate deploy` or `prisma migrate dev` fails with `P3015` ("Could not find the migration file"), use `npx prisma db push` instead, which works correctly. This is fixed in later Prisma versions.
 
 ### 4. Run the server
 
@@ -72,57 +71,13 @@ npm run build
 npm start
 ```
 
-## Database Migrations
-
-This project uses **Prisma migrations** (not `db push`) for schema management.
-
-### Create a new migration after schema changes
-
-```bash
-npx prisma migrate dev --name <descriptive-name>
-```
-
-This will:
-1. Generate a new SQL migration file in `prisma/migrations/`
-2. Apply it to the dev database
-3. Regenerate the Prisma client
-
-### Apply migrations in production
-
-```bash
-npx prisma migrate deploy
-```
-
-### Reset the database (drops all data)
-
-```bash
-npm run db:reset
-```
-
-⚠️ **Never run `prisma migrate reset` in production.**
-
-## Scripts
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start dev server with hot reload |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm start` | Run compiled production server |
-| `npm run typecheck` | Type-check without emitting |
-| `npm test` | Run all tests |
-| `npm run db:migrate` | Create + apply a new migration (dev) |
-| `npm run db:migrate:deploy` | Apply pending migrations (prod) |
-| `npm run db:seed` | Seed database with initial data |
-| `npm run db:studio` | Open Prisma Studio (DB GUI) |
-| `npm run db:reset` | Reset database (dev only) |
-
 ## Architecture
 
 ```
 backend/
   prisma/
     schema.prisma          # Database schema
-    migrations/            # SQL migration files (committed)
+    migrations/            # SQL migration files
   src/
     index.ts               # Express server entry point
     db/
@@ -134,15 +89,19 @@ backend/
       errorHandler.ts      # Global error handler
       requestId.ts         # Request ID for tracing
     routes/
-      dogs.ts              # /api/dogs (public read, admin write)
-      testimonials.ts      # /api/testimonials
-      adoptions.ts         # /api/adoptions
-      auth.ts              # /api/auth/login, /api/auth/me
-      content.ts           # /api/content (CMS)
-      volunteers.ts        # /api/volunteers
-      newsletter.ts        # /api/newsletter
+      dogs.ts              # /api/v1/dogs (public read, admin write)
+      testimonials.ts      # /api/v1/testimonials
+      adoptions.ts         # /api/v1/adoptions
+      auth.ts              # /api/v1/auth/login, /api/v1/auth/me
+      content.ts           # /api/v1/content (CMS)
+      volunteers.ts        # /api/v1/volunteers
+      newsletter.ts        # /api/v1/newsletter
+      donations.ts         # /api/v1/donations (Stripe)
+      paypal-donations.ts  # /api/v1/paypal-donations (PayPal)
     services/
       email.ts             # Resend email service
+      stripe.ts            # Stripe client initialization
+      paypal.ts            # PayPal client initialization
     utils/
       parseId.ts           # URL param ID parser
       asyncHandler.ts      # Async route wrapper
@@ -155,44 +114,53 @@ backend/
       integration.test.ts  # Full-stack integration tests
 ```
 
+## API Endpoints
+
+### Public
+- `GET /api/v1/health` — Health check with DB connectivity
+- `GET /api/v1/dogs` — List dogs (paginated, filterable)
+- `GET /api/v1/dogs/:id` — Get dog by ID
+- `GET /api/v1/testimonials` — List testimonials
+- `GET /api/v1/content/:section` — Get CMS content section
+- `POST /api/v1/adoptions` — Submit adoption inquiry
+- `POST /api/v1/volunteers` — Submit volunteer application
+- `POST /api/v1/newsletter` — Subscribe to newsletter
+- `GET/POST /api/v1/newsletter/unsubscribe` — Unsubscribe with token
+- `POST /api/v1/auth/login` — Admin login
+- `POST /api/v1/donations/create-checkout` — Create Stripe checkout session
+- `POST /api/v1/donations/webhook` — Stripe webhook receiver
+- `POST /api/v1/paypal-donations/create-order` — Create PayPal order
+- `POST /api/v1/paypal-donations/capture-order` — Capture PayPal payment
+- `POST /api/v1/paypal-donations/webhook` — PayPal webhook receiver
+
+### Admin only (requires JWT)
+- `POST /api/v1/dogs` — Create dog
+- `PUT /api/v1/dogs/:id` — Update dog
+- `DELETE /api/v1/dogs/:id` — Delete dog
+- `GET /api/v1/adoptions` — List adoption inquiries
+- `GET /api/v1/adoptions/:id` — Get adoption inquiry
+- `PUT /api/v1/adoptions/:id` — Update adoption status/notes
+- `DELETE /api/v1/adoptions/:id` — Delete adoption
+- `GET /api/v1/volunteers` — List volunteers
+- `PUT /api/v1/volunteers/:id` — Update volunteer
+- `DELETE /api/v1/volunteers/:id` — Delete volunteer
+- `GET /api/v1/newsletter` — List subscribers
+- `DELETE /api/v1/newsletter/:email` — Remove subscriber
+- `PUT /api/v1/content/:section` — Update CMS content section
+- `GET /api/v1/auth/me` — Get current user
+- `GET /api/v1/donations` — List donations
+- `GET /api/v1/donations/stats` — Get donation statistics
+- `GET /api/v1/donations/:id` — Get specific donation
+- `GET /api/v1/paypal-donations` — List PayPal donations
+
 ## Security
 
 - **Helmet** for security headers (CSP, HSTS, X-Frame-Options)
 - **CORS** with explicit origin allowlist (env-required)
 - **CSRF** via double-submit cookie pattern
 - **JWT** auth with 24h expiry
-- **Rate limiting** (100 req/15min general, 10 req/15min for forms)
+- **Rate limiting** (200 req/15min general, 200 req/15min for forms)
 - **Zod** validation on all request bodies and query params
 - **Bcrypt** password hashing
 - **Newsletter** unsubscribe uses HMAC-signed tokens
 - **Trust proxy** enabled for accurate client IPs behind reverse proxies
-
-## API Endpoints
-
-### Public
-- `GET /api/health` — Health check with DB connectivity
-- `GET /api/dogs` — List dogs (paginated, filterable)
-- `GET /api/dogs/:id` — Get dog by ID
-- `GET /api/testimonials` — List testimonials
-- `GET /api/content/:section` — Get CMS content section
-- `POST /api/adoptions` — Submit adoption inquiry
-- `POST /api/volunteers` — Submit volunteer application
-- `POST /api/newsletter` — Subscribe to newsletter
-- `GET/POST /api/newsletter/unsubscribe` — Unsubscribe with token
-- `POST /api/auth/login` — Admin login
-
-### Admin only (requires JWT)
-- `POST /api/dogs` — Create dog
-- `PUT /api/dogs/:id` — Update dog
-- `DELETE /api/dogs/:id` — Delete dog
-- `GET /api/adoptions` — List adoption inquiries
-- `GET /api/adoptions/:id` — Get adoption inquiry
-- `PUT /api/adoptions/:id` — Update adoption status/notes
-- `DELETE /api/adoptions/:id` — Delete adoption
-- `GET /api/volunteers` — List volunteers
-- `PUT /api/volunteers/:id` — Update volunteer
-- `DELETE /api/volunteers/:id` — Delete volunteer
-- `GET /api/newsletter` — List subscribers
-- `DELETE /api/newsletter/:email` — Remove subscriber
-- `PUT /api/content/:section` — Update CMS content section
-- `GET /api/auth/me` — Get current user
