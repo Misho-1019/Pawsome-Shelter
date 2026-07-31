@@ -61,6 +61,7 @@ app.use(cors({
     return callback(new Error('CORS not allowed'))
   },
   credentials: true,
+  allowedHeaders: ['Content-Type', 'x-csrf-token', 'Authorization'],
 }))
 
 // Cookie parser for CSRF
