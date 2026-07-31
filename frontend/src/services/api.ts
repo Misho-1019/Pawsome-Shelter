@@ -301,4 +301,17 @@ export const api = {
         headers: authHeaders(),
       }),
   },
+
+  paypalDonations: {
+    createOrder: (data: { amount: number; interval?: string; donorEmail?: string; donorName?: string; message?: string }) =>
+      request<{ orderId: string; approveUrl: string; donationId: number }>('/paypal-donations/create-order', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    captureOrder: (data: { orderId: string; donationId: number }) =>
+      request<{ status: string; captureId?: string }>('/paypal-donations/capture-order', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
 }

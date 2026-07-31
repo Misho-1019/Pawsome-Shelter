@@ -27,6 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@paypal/paypal-server-sdk": "^2.4.0",
     "@prisma/client": "^5.22.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/helmet": "^0.0.48",

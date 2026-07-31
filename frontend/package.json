@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@paypal/react-paypal-js": "^10.3.0",
     "@tanstack/react-query": "^5.101.4",
     "framer-motion": "^12.42.2",
     "react": "^19.2.7",

@@ -13,6 +13,7 @@ import contentRouter from './routes/content'
 import volunteersRouter from './routes/volunteers'
 import newsletterRouter from './routes/newsletter'
 import donationsRouter from './routes/donations'
+import paypalDonationsRouter from './routes/paypal-donations'
 import { issueCsrfToken, verifyCsrfToken } from './middleware/csrf'
 import { requestId } from './middleware/requestId'
 import { errorHandler } from './middleware/errorHandler'
@@ -70,6 +71,7 @@ app.use(cookieParser())
 // Stripe webhook needs RAW body for signature verification.
 // This MUST be registered before express.json() consumes the body.
 app.use('/api/v1/donations/webhook', express.raw({ type: 'application/json' }))
+app.use('/api/v1/paypal-donations/webhook', express.raw({ type: 'application/json' }))
 
 // Body parser with size limit
 app.use(express.json({ limit: '1mb' }))
@@ -162,6 +164,7 @@ app.use('/api/v1/content', contentRouter)
 app.use('/api/v1/volunteers', strictLimiter, volunteersRouter)
 app.use('/api/v1/newsletter', strictLimiter, newsletterRouter)
 app.use('/api/v1/donations', donationsRouter)
+app.use('/api/v1/paypal-donations', paypalDonationsRouter)
 
 // CORS rejection handler
 app.use((err: Error, _req: express.Request, res: express.Response, next: express.NextFunction) => {

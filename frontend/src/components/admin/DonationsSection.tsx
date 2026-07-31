@@ -51,6 +51,15 @@ function intervalColor(interval: DonationInterval): string {
   }
 }
 
+function providerColor(provider: string): string {
+  switch (provider) {
+    case 'paypal':
+      return 'bg-blue-100 text-blue-700'
+    default:
+      return 'bg-purple-100 text-purple-700'
+  }
+}
+
 export function DonationsSection() {
   const { addToast } = useToast()
   const [statusFilter, setStatusFilter] = useState<DonationStatus | 'all'>('all')
@@ -119,6 +128,17 @@ export function DonationsSection() {
           className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${intervalColor(d.interval)}`}
         >
           {intervalLabel(d.interval)}
+        </span>
+      ),
+    },
+    {
+      key: 'paymentProvider',
+      header: 'Provider',
+      render: (d) => (
+        <span
+          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold capitalize ${providerColor(d.paymentProvider)}`}
+        >
+          {d.paymentProvider === 'paypal' ? 'PayPal' : 'Stripe'}
         </span>
       ),
     },

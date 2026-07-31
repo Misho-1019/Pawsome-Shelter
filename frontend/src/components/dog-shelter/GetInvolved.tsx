@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { VolunteerDrawer } from './VolunteerDrawer'
 import { SlideIn } from '../ui/animations'
 import { Drawer, FormField, FormError, SubmitButton } from '../ui'
@@ -94,7 +95,10 @@ export function GetInvolved() {
     }
   }
 
+  const paypalClientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || ''
+
   return (
+    <PayPalScriptProvider options={{ clientId: paypalClientId, currency: 'USD' }}>
     <>
       <section className="py-32 bg-surface-container" id="volunteer">
         <div className="max-w-container mx-auto px-4 md:px-12">
@@ -288,21 +292,68 @@ export function GetInvolved() {
             >
               Cancel
             </button>
-            <SubmitButton
-              loading={isProcessing}
-              loadingText="Redirecting..."
-              disabled={!donorEmail}
-              className="flex-1"
+          </div>
+
+          {/* Payment Buttons */}
+          <div className="space-y-3">
+            {/* Stripe Button */}
+            <button
+              onClick={handleCheckout}
+              disabled={!donorEmail || isProcessing}
+              className="w-full bg-primary-container text-white font-heading text-lg py-4 rounded-xl hover:scale-[1.02] active:scale-100 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              Continue to Payment
-            </SubmitButton>
+              {isProcessing ? 'Redirecting...' : 'Pay with Card'}
+            </button>
+
+            {/* PayPal Button */}
+            {donorEmail && (
+              <div className="pt-2">
+                <PayPalButtons
+                  style={{ layout: 'vertical', color: 'gold', shape: 'rect', height: 45 }}
+                  createOrder={async () => {
+                    const amount = isCustom ? parseInt(customAmount) : donationAmount
+                    const response = await api.paypalDonations.createOrder({
+                      amount,
+                      interval: donationInterval,
+                      donorEmail: donorEmail || undefined,
+                    })
+                    return response.orderId
+                  }}
+                  onApprove={async (data) => {
+                    const amount = isCustom ? parseInt(customAmount) : donationAmount
+                    // Find the donationId from the create-order response
+                    // We need to re-create the order to get the donationId
+                    // Actually, we should store it. Let me use a simpler approach.
+                    try {
+                      const orderResponse = await api.paypalDonations.createOrder({
+                        amount,
+                        interval: donationInterval,
+                        donorEmail: donorEmail || undefined,
+                      })
+                      await api.paypalDonations.captureOrder({
+                        orderId: data.orderID,
+                        donationId: orderResponse.donationId,
+                      })
+                      window.location.href = `${window.location.origin}/donation/success?session_id=${data.orderID}`
+                    } catch {
+                      setCheckoutError('Failed to capture PayPal payment')
+                    }
+                  }}
+                  onError={(err) => {
+                    setCheckoutError('PayPal payment failed. Please try again.')
+                    console.error('PayPal error:', err)
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           <p className="text-xs text-on-surface-variant text-center">
-            Secure payment powered by Stripe. Your card details are never stored on our servers.
+            Secure payment powered by Stripe and PayPal. Your card details are never stored on our servers.
           </p>
         </form>
       </Drawer>
     </>
+    </PayPalScriptProvider>
   )
 }

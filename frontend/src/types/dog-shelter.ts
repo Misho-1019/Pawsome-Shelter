@@ -117,13 +117,16 @@ export interface Donation {
   currency: string
   status: DonationStatus
   interval: DonationInterval
+  paymentProvider: string
   donorEmail: string | null
   donorName: string | null
   message: string | null
-  stripeSessionId: string
+  stripeSessionId: string | null
   stripePaymentId: string | null
   stripeSubscriptionId: string | null
   stripeCustomerId: string | null
+  paypalOrderId: string | null
+  paypalPaymentId: string | null
   createdAt: string
   updatedAt: string
 }
