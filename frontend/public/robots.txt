@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /donation/success
-Disallow: /donation/cancel
+Disallow: /donation
+
 Sitemap: https://pawsomeshelter.com/sitemap.xml

@@ -8,6 +8,7 @@ import { DogShelter } from './pages/DogShelter'
 import { DonationSuccess } from './pages/DonationSuccess'
 import { DonationCancel } from './pages/DonationCancel'
 import { queryClient } from './config/queryClient'
+import { StructuredData } from './components/seo/StructuredData'
 
 function isAdminRoute(): boolean {
   if (typeof window === 'undefined') return false
@@ -68,6 +69,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
+          <StructuredData />
           <DogShelter />
           <BackToTop />
         </ToastProvider>
