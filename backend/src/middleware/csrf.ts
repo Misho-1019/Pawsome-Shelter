@@ -3,8 +3,14 @@ import { Request, Response, NextFunction } from 'express'
 const CSRF_HEADER = 'x-csrf-token'
 const CSRF_COOKIE = 'csrf-token'
 
-// Endpoints that don't require CSRF (they have their own protection: credentials for login, signed token for unsubscribe, Stripe webhook signature)
-const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login']
+// Endpoints that don't require CSRF:
+// - auth/login: credentials-based, has its own protection
+// - newsletter/unsubscribe: HMAC-signed token
+// - donations/webhook: Stripe signature verification
+// - Public POST endpoints (adoptions, volunteers, newsletter subscribe, donations create-checkout):
+//   These are unauthenticated — CSRF protection is meaningless since there's no session to hijack.
+//   CSRF only protects authenticated state-changing actions.
+const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login', '/api/v1/adoptions', '/api/v1/volunteers', '/api/v1/newsletter', '/api/v1/donations/create-checkout']
 const CSRF_EXEMPT_PREFIXES = ['/api/v1/newsletter/unsubscribe', '/api/v1/donations/webhook']
 
 function isCsrfExempt(path: string): boolean {
