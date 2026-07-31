@@ -43,7 +43,7 @@ export function issueCsrfToken(_req: Request, res: Response, next: NextFunction)
 
   // Also set token in response header for cross-origin (production Vercel + Fly.io)
   // Frontend reads this header and stores the token in JS memory
-  res.setHeader('X-CSRF-Token', token)
+  res.setHeader('x-csrf-token', token)
 
   next()
 }

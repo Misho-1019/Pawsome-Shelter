@@ -4,7 +4,7 @@ import type { Dog, Testimonial, PaginatedResponse, Adoption, Volunteer, Newslett
 const API_BASE = apiUrl('')
 
 // CSRF token stored in JavaScript memory (not cookies)
-// Updated from X-CSRF-Token response header on every request
+// Updated from x-csrf-token response header on every request
 let csrfToken = ''
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -15,8 +15,12 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 
   // Include CSRF token for state-changing methods
   const method = (options?.method || 'GET').toUpperCase()
-  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method) && csrfToken) {
-    headers['x-csrf-token'] = csrfToken
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    if (csrfToken) {
+      headers['x-csrf-token'] = csrfToken
+    } else {
+      console.warn('[CSRF] No token available for', method, url)
+    }
   }
 
   const response = await fetch(`${API_BASE}${url}`, {
@@ -25,10 +29,13 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
     credentials: 'include',
   })
 
-  // Capture CSRF token from response header for subsequent requests
-  const newToken = response.headers.get('X-CSRF-Token')
+  // Capture CSRF token from response header (try lowercase first, then PascalCase)
+  const newToken = response.headers.get('x-csrf-token') || response.headers.get('X-CSRF-Token')
   if (newToken) {
     csrfToken = newToken
+    if (method === 'GET') {
+      console.log('[CSRF] Token captured from GET response:', newToken.substring(0, 8) + '...')
+    }
   }
 
   if (!response.ok) {
