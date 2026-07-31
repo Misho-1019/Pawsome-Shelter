@@ -3,8 +3,22 @@ import { VolunteerDrawer } from './VolunteerDrawer'
 import { SlideIn } from '../ui/animations'
 import { Drawer, FormField, FormError, SubmitButton } from '../ui'
 import { api } from '../../services/api'
+import type { DonationInterval } from '../../types/dog-shelter'
+
+const PRESET_AMOUNTS: Record<DonationInterval, number[]> = {
+  one_time: [25, 50, 100],
+  monthly: [10, 25, 50],
+  annual: [100, 250, 500],
+}
+
+const INTERVAL_LABELS: Record<DonationInterval, string> = {
+  one_time: 'One-time',
+  monthly: 'Monthly',
+  annual: 'Annual',
+}
 
 export function GetInvolved() {
+  const [donationInterval, setDonationInterval] = useState<DonationInterval>('one_time')
   const [donationAmount, setDonationAmount] = useState(50)
   const [customAmount, setCustomAmount] = useState('')
   const [isCustom, setIsCustom] = useState(false)
@@ -14,6 +28,14 @@ export function GetInvolved() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
+  const presetAmounts = PRESET_AMOUNTS[donationInterval]
+
+  const handleIntervalChange = (interval: DonationInterval) => {
+    setDonationInterval(interval)
+    setDonationAmount(PRESET_AMOUNTS[interval][1]) // Default to middle preset
+    setIsCustom(false)
+    setCustomAmount('')
+  }
 
   const handleAmountClick = (amount: number) => {
     setDonationAmount(amount)
@@ -37,7 +59,6 @@ export function GetInvolved() {
   const handleDonate = () => {
     const amount = isCustom ? parseInt(customAmount) : donationAmount
     if (amount >= 1) {
-      // Open checkout drawer for email collection
       setCheckoutError(null)
       setIsCheckoutDrawerOpen(true)
     }
@@ -57,11 +78,11 @@ export function GetInvolved() {
     try {
       const response = await api.donations.createCheckout({
         amount,
+        interval: donationInterval,
         donorEmail: donorEmail || undefined,
       })
 
       if (response.url) {
-        // Redirect to Stripe hosted checkout
         window.location.href = response.url
       } else {
         setCheckoutError('Failed to create checkout session')
@@ -114,11 +135,30 @@ export function GetInvolved() {
                 <h2 className="font-heading text-3xl md:text-4xl mb-6">
                   Donate Today
                 </h2>
-                <p className="font-body text-surface-container mb-10">
+                <p className="font-body text-surface-container mb-6">
                   Your contribution directly funds medical care, food, and warm beds for our residents.
                 </p>
+
+                {/* Interval Toggle */}
+                <div className="flex gap-2 mb-6 bg-white/10 rounded-xl p-1">
+                  {(Object.keys(INTERVAL_LABELS) as DonationInterval[]).map((interval) => (
+                    <button
+                      key={interval}
+                      onClick={() => handleIntervalChange(interval)}
+                      className={`flex-1 py-2.5 px-3 rounded-lg font-body text-sm font-semibold transition-all ${
+                        donationInterval === interval
+                          ? 'bg-primary-container text-white'
+                          : 'text-white/60 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {INTERVAL_LABELS[interval]}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Amount Presets */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-                  {[25, 50, 100].map((amount) => (
+                  {presetAmounts.map((amount) => (
                     <button
                       key={amount}
                       onClick={() => handleAmountClick(amount)}
@@ -168,8 +208,8 @@ export function GetInvolved() {
                 <div className="mt-auto pt-4">
                   <p className="text-white/60 text-sm mb-4 text-center">
                     {isCustom && customAmount
-                      ? `Donating: $${customAmount}`
-                      : `Donating: $${donationAmount}`}
+                      ? `Donating: $${customAmount}${donationInterval !== 'one_time' ? ` / ${donationInterval === 'monthly' ? 'month' : 'year'}` : ''}`
+                      : `Donating: $${donationAmount}${donationInterval !== 'one_time' ? ` / ${donationInterval === 'monthly' ? 'month' : 'year'}` : ''}`}
                   </p>
                   <button
                     onClick={handleDonate}
@@ -209,6 +249,14 @@ export function GetInvolved() {
             <p className="text-sm text-on-surface-variant">Donation amount</p>
             <p className="text-2xl font-heading text-primary">
               ${isCustom ? customAmount || '0' : donationAmount}
+              {donationInterval !== 'one_time' && (
+                <span className="text-sm font-body text-on-surface-variant ml-2">
+                  / {donationInterval === 'monthly' ? 'month' : 'year'}
+                </span>
+              )}
+            </p>
+            <p className="text-xs text-on-surface-variant mt-1">
+              {INTERVAL_LABELS[donationInterval]} donation
             </p>
           </div>
 

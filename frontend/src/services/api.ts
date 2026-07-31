@@ -75,6 +75,7 @@ export interface VolunteerCreateInput {
 
 export interface DonationCreateInput {
   amount: number              // in dollars (e.g., 25 = $25.00)
+  interval?: 'one_time' | 'monthly' | 'annual'
   donorEmail?: string
   donorName?: string
   message?: string

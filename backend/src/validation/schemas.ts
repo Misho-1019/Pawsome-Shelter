@@ -81,6 +81,7 @@ export const LoginSchema = z.object({
 
 export const CreateCheckoutSchema = z.object({
   amount: z.number().positive().max(999999),
+  interval: z.enum(['one_time', 'monthly', 'annual']).default('one_time'),
   donorEmail: z.string().email().optional(),
   donorName: z.string().min(1).max(100).optional(),
   message: z.string().max(500).optional(),

@@ -57,6 +57,12 @@ enum DonationStatus {
   Refunded
 }
 
+enum DonationInterval {
+  one_time
+  monthly
+  annual
+}
+
 model Dog {
   id           Int       @id @default(autoincrement())
   name         String
@@ -161,18 +167,22 @@ model User {
 }
 
 model Donation {
-  id              Int            @id @default(autoincrement())
-  amount          Int            // Amount in cents (e.g., 5000 = $50.00)
-  currency        String         @default("usd")
-  status          DonationStatus @default(Pending)
-  donorEmail      String?
-  donorName       String?
-  message         String?        @db.Text
-  stripeSessionId String         @unique
-  stripePaymentId String?        @unique
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  id                     Int              @id @default(autoincrement())
+  amount                 Int              // Amount in cents (e.g., 5000 = $50.00)
+  currency               String           @default("usd")
+  status                 DonationStatus   @default(Pending)
+  interval               DonationInterval @default(one_time)
+  donorEmail             String?
+  donorName              String?
+  message                String?          @db.Text
+  stripeSessionId        String           @unique
+  stripePaymentId        String?          @unique
+  stripeSubscriptionId   String?          @unique
+  stripeCustomerId       String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
 
   @@index([status, createdAt])
   @@index([createdAt])
+  @@index([stripeSubscriptionId])
 }

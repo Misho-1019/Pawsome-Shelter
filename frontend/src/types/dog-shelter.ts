@@ -10,6 +10,7 @@ export type EnergyLevel = 'Low' | 'Medium' | 'High'
 export type AdoptionStatus = 'Pending' | 'InReview' | 'MeetGreet' | 'Approved' | 'Rejected' | 'Completed'
 export type VolunteerStatus = 'Pending' | 'Approved' | 'Rejected'
 export type DonationStatus = 'Pending' | 'Succeeded' | 'Failed' | 'Refunded'
+export type DonationInterval = 'one_time' | 'monthly' | 'annual'
 
 export interface Dog {
   id: number
@@ -115,11 +116,14 @@ export interface Donation {
   amount: number             // in cents
   currency: string
   status: DonationStatus
+  interval: DonationInterval
   donorEmail: string | null
   donorName: string | null
   message: string | null
   stripeSessionId: string
   stripePaymentId: string | null
+  stripeSubscriptionId: string | null
+  stripeCustomerId: string | null
   createdAt: string
   updatedAt: string
 }

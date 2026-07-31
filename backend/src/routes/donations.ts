@@ -14,9 +14,10 @@ const router = Router()
 // POST /api/v1/donations/create-checkout
 // Creates a Stripe Checkout Session and returns the redirect URL
 // Saves the donation as Pending in the database first
+// Supports one-time, monthly, and annual recurring donations
 router.post('/create-checkout', validateBody(CreateCheckoutSchema), async (req: Request, res: Response) => {
   try {
-    const { amount, donorEmail, donorName, message } = req.body
+    const { amount, interval, donorEmail, donorName, message } = req.body
 
     // Amount is in dollars from frontend, convert to cents for Stripe
     const amountInCents = Math.round(amount * 100)
@@ -27,13 +28,13 @@ router.post('/create-checkout', validateBody(CreateCheckoutSchema), async (req: 
     }
 
     // Create donation record first (status: Pending)
-    // We use a temporary session ID placeholder, will update after Stripe creates the session
     const tempSessionId = `temp_${Date.now()}_${Math.random().toString(36).slice(2)}`
     const donation = await prisma.donation.create({
       data: {
         amount: amountInCents,
         currency: 'usd',
         status: 'Pending',
+        interval: interval || 'one_time',
         donorEmail: donorEmail || null,
         donorName: donorName || null,
         message: message || null,
@@ -41,33 +42,68 @@ router.post('/create-checkout', validateBody(CreateCheckoutSchema), async (req: 
       },
     })
 
-    // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Donation to Pawsome Shelter',
-              description: message
-                ? `Donation with message: "${message.substring(0, 100)}${message.length > 100 ? '...' : ''}"`
-                : 'Thank you for supporting Pawsome Shelter!',
-            },
-            unit_amount: amountInCents,
-          },
-          quantity: 1,
+    const productName = 'Donation to Pawsome Shelter'
+    const productDescription = message
+      ? `Donation with message: "${message.substring(0, 100)}${message.length > 100 ? '...' : ''}"`
+      : 'Thank you for supporting Pawsome Shelter!'
+
+    let sessionParams: Stripe.Checkout.SessionCreateParams
+
+    if (interval === 'monthly' || interval === 'annual') {
+      // Recurring donation — create a Stripe Price with recurring interval
+      const recurringInterval = interval === 'annual' ? 'year' as const : 'month' as const
+
+      const price = await stripe.prices.create({
+        unit_amount: amountInCents,
+        currency: 'usd',
+        recurring: { interval: recurringInterval },
+        product_data: {
+          name: productName,
         },
-      ],
-      customer_email: donorEmail || undefined,
-      success_url: `${config.FRONTEND_URL}/donation/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${config.FRONTEND_URL}/donation/cancel`,
-      metadata: {
-        donation_id: String(donation.id),
-        donor_name: donorName || '',
-      },
-    })
+      })
+
+      sessionParams = {
+        mode: 'subscription',
+        line_items: [{ price: price.id, quantity: 1 }],
+        customer_email: donorEmail || undefined,
+        success_url: `${config.FRONTEND_URL}/donation/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${config.FRONTEND_URL}/donation/cancel`,
+        metadata: {
+          donation_id: String(donation.id),
+          donor_name: donorName || '',
+          interval,
+        },
+      }
+    } else {
+      // One-time donation
+      sessionParams = {
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: productName,
+                description: productDescription,
+              },
+              unit_amount: amountInCents,
+            },
+            quantity: 1,
+          },
+        ],
+        customer_email: donorEmail || undefined,
+        success_url: `${config.FRONTEND_URL}/donation/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${config.FRONTEND_URL}/donation/cancel`,
+        metadata: {
+          donation_id: String(donation.id),
+          donor_name: donorName || '',
+          interval: 'one_time',
+        },
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     // Update donation with real Stripe session ID
     await prisma.donation.update({
@@ -79,6 +115,7 @@ router.post('/create-checkout', validateBody(CreateCheckoutSchema), async (req: 
       donationId: donation.id,
       sessionId: session.id,
       amount: amountInCents,
+      interval,
     })
 
     res.json({ url: session.url, sessionId: session.id })
@@ -157,6 +194,104 @@ router.post('/webhook', async (req: Request, res: Response) => {
             data: { status: 'Refunded' },
           })
           logger.info('Donation marked as refunded', { paymentIntentId })
+        }
+        break
+      }
+
+      // Subscription events for recurring donations
+      case 'customer.subscription.created': {
+        const subscription = event.data.object as Stripe.Subscription
+        const donationId = subscription.metadata?.donation_id
+
+        if (donationId) {
+          await prisma.donation.update({
+            where: { id: parseInt(donationId, 10) },
+            data: {
+              status: 'Succeeded',
+              stripeSubscriptionId: subscription.id,
+              stripeCustomerId: subscription.customer as string,
+            },
+          })
+          logger.info('Recurring donation subscription created', { donationId, subscriptionId: subscription.id })
+        }
+        break
+      }
+
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription
+        const donationId = subscription.metadata?.donation_id
+
+        if (donationId) {
+          const status = subscription.status === 'active' ? 'Succeeded'
+            : subscription.status === 'canceled' ? 'Failed'
+            : undefined
+
+          if (status) {
+            await prisma.donation.update({
+              where: { id: parseInt(donationId, 10) },
+              data: { status },
+            })
+          }
+          logger.info('Recurring donation subscription updated', { donationId, subscriptionStatus: subscription.status })
+        }
+        break
+      }
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription
+        const donationId = subscription.metadata?.donation_id
+
+        if (donationId) {
+          await prisma.donation.update({
+            where: { id: parseInt(donationId, 10) },
+            data: { status: 'Failed' },
+          })
+          logger.info('Recurring donation subscription canceled', { donationId, subscriptionId: subscription.id })
+        }
+        break
+      }
+
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object as Stripe.Invoice
+        const invoiceData = invoice as unknown as { subscription: string; payment_intent: string }
+        const subscriptionId = invoiceData.subscription
+
+        if (subscriptionId) {
+          // Find the original donation for this subscription
+          const originalDonation = await prisma.donation.findFirst({
+            where: { stripeSubscriptionId: subscriptionId },
+          })
+
+          if (originalDonation) {
+            // Create a new donation record for this recurring payment
+            await prisma.donation.create({
+              data: {
+                amount: invoice.amount_paid,
+                currency: invoice.currency,
+                status: 'Succeeded',
+                interval: originalDonation.interval,
+                donorEmail: originalDonation.donorEmail,
+                donorName: originalDonation.donorName,
+                message: originalDonation.message,
+                stripeSessionId: `sub_${subscriptionId}_${Date.now()}`,
+                stripePaymentId: invoiceData.payment_intent || null,
+                stripeSubscriptionId: subscriptionId,
+                stripeCustomerId: invoice.customer as string || null,
+              },
+            })
+            logger.info('Recurring payment recorded', { subscriptionId, amount: invoice.amount_paid })
+          }
+        }
+        break
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice
+        const invoiceData = invoice as unknown as { subscription: string }
+        const subscriptionId = invoiceData.subscription
+
+        if (subscriptionId) {
+          logger.warn('Recurring payment failed', { subscriptionId, customerId: invoice.customer })
         }
         break
       }

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../../services/api'
 import { useToast } from '../ui/Toast'
 import { DataTable, type Column } from './DataTable'
-import type { Donation, DonationStatus } from '../../types/dog-shelter'
+import type { Donation, DonationStatus, DonationInterval } from '../../types/dog-shelter'
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -25,6 +25,28 @@ function statusColor(status: DonationStatus): string {
     case 'Failed':
       return 'bg-error-container text-error'
     case 'Refunded':
+      return 'bg-surface-container-high text-on-surface-variant'
+  }
+}
+
+function intervalLabel(interval: DonationInterval): string {
+  switch (interval) {
+    case 'monthly':
+      return 'Monthly'
+    case 'annual':
+      return 'Annual'
+    default:
+      return 'One-time'
+  }
+}
+
+function intervalColor(interval: DonationInterval): string {
+  switch (interval) {
+    case 'monthly':
+      return 'bg-tertiary-container text-tertiary'
+    case 'annual':
+      return 'bg-primary-container text-white'
+    default:
       return 'bg-surface-container-high text-on-surface-variant'
   }
 }
@@ -86,6 +108,17 @@ export function DonationsSection() {
           className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${statusColor(d.status)}`}
         >
           {d.status}
+        </span>
+      ),
+    },
+    {
+      key: 'interval',
+      header: 'Type',
+      render: (d) => (
+        <span
+          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${intervalColor(d.interval)}`}
+        >
+          {intervalLabel(d.interval)}
         </span>
       ),
     },
