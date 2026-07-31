@@ -122,8 +122,6 @@ The project was built to simulate **production-level nonprofit requirements**, m
 
 ## 🖼️ Screenshots
 
-<!-- Add screenshots here -->
-
 ### 1️⃣ Public Site — Hero & Dog Grid
 
 ![Public Site](screenshots/public-site.png)
