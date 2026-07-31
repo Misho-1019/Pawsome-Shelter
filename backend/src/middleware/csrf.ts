@@ -10,7 +10,7 @@ const CSRF_COOKIE = 'csrf-token'
 // - Public POST endpoints (adoptions, volunteers, newsletter subscribe, donations create-checkout):
 //   These are unauthenticated — CSRF protection is meaningless since there's no session to hijack.
 //   CSRF only protects authenticated state-changing actions.
-const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login', '/api/v1/adoptions', '/api/v1/volunteers', '/api/v1/newsletter', '/api/v1/donations/create-checkout']
+const CSRF_EXEMPT_PATHS = ['/api/v1/auth/login', '/api/v1/adoptions', '/api/v1/volunteers', '/api/v1/newsletter', '/api/v1/donations/create-checkout', '/api/v1/paypal-donations/create-order', '/api/v1/paypal-donations/capture-order']
 const CSRF_EXEMPT_PREFIXES = ['/api/v1/newsletter/unsubscribe', '/api/v1/donations/webhook', '/api/v1/paypal-donations/webhook']
 
 function isCsrfExempt(path: string): boolean {

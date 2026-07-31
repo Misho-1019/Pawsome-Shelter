@@ -124,27 +124,28 @@ The project was built to simulate **production-level nonprofit requirements**, m
 
 ### 1️⃣ Public Site — Hero & Dog Grid
 
-![Public Site](screenshots/public-site.png)
+![Public Site](frontend/public/screenshots/Screenshot%202026-08-01%20014622.png)
+![Public Site](frontend/public/screenshots/Screenshot%202026-08-01%20014641.png)
 
 ### 2️⃣ Dog Detail Drawer
 
-![Dog Detail](screenshots/dog-detail.png)
+![Dog Detail](frontend/public/screenshots/Screenshot%202026-08-01%20014652.png)
 
 ### 3️⃣ Donation Flow (Stripe + PayPal)
 
-![Donation Flow](screenshots/donation-flow.png)
+![Donation Flow](frontend/public/screenshots/Screenshot%202026-08-01%20014923.png)
 
 ### 4️⃣ Admin Dashboard
 
-![Admin Dashboard](screenshots/admin-dashboard.png)
+![Admin Dashboard](frontend/public/screenshots/Screenshot%202026-08-01%20015013.png)
 
 ### 5️⃣ Admin — Dog Management
 
-![Admin Dogs](screenshots/admin-dogs.png)
+![Admin Dogs](frontend/public/screenshots/Screenshot%202026-08-01%20015036.png)
 
 ### 6️⃣ Admin — Donation Tracking
 
-![Admin Donations](screenshots/admin-donations.png)
+![Admin Donations](frontend/public/screenshots/Screenshot%202026-08-01%20015045.png)
 
 ---
 
