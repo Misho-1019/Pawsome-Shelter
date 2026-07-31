@@ -28,6 +28,7 @@ export function DonationSuccess() {
       currency: 'usd',
       status: 'Succeeded',
       interval: 'one_time',
+      paymentProvider: 'stripe',
       donorEmail: null,
       donorName: null,
       message: null,
@@ -35,6 +36,8 @@ export function DonationSuccess() {
       stripePaymentId: null,
       stripeSubscriptionId: null,
       stripeCustomerId: null,
+      paypalOrderId: null,
+      paypalPaymentId: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     })

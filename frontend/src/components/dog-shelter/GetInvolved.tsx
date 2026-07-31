@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 import { VolunteerDrawer } from './VolunteerDrawer'
 import { SlideIn } from '../ui/animations'
-import { Drawer, FormField, FormError, SubmitButton } from '../ui'
+import { Drawer, FormField, FormError } from '../ui'
 import { api } from '../../services/api'
 import type { DonationInterval } from '../../types/dog-shelter'
 
