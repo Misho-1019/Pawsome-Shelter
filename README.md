@@ -83,7 +83,7 @@ The project was built to simulate **production-level nonprofit requirements**, m
 
 ## 🌐 Live Demo
 
-- **Frontend:** https://pawsomeshelter.vercel.app
+- **Frontend:** [https://pawsomeshelter.vercel.app](https://pawsome-shelter.vercel.app/)
 - **Backend API:** https://pawsome-shelter-api.fly.dev
 - **Admin Panel:** https://pawsomeshelter.vercel.app/admin/login
 
